@@ -210,11 +210,11 @@ const onSubmit = handleSubmit(async (values) => {
               </div>
 
               <!-- Show Password Checkbox -->
-              <div class="flex items-center gap-3 px-1">
+              <div class="flex items-center gap-2 px-1">
                 <Checkbox id="show-password" v-model:checked="isVisible" />
                 <label
                   for="show-password"
-                  class="text-xs font-sans font-bold text-stone-500 uppercase tracking-widest cursor-pointer select-none"
+                  class="text-xs font-sans font-semibold text-stone-500 uppercase tracking-widest cursor-pointer select-none"
                 >
                   Tampilkan Kata Sandi
                 </label>

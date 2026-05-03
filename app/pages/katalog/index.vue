@@ -102,7 +102,7 @@ const sortOptions = [
 
 // Search logic with URL sync
 const searchQuery = ref((route.query.search as string) || "");
-let searchTimeout: number | null = null;
+let searchTimeout: any = null;
 
 watch(searchQuery, (val) => {
   if (searchTimeout) clearTimeout(searchTimeout);
