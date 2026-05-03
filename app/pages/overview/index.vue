@@ -84,7 +84,9 @@ const recentItems = ref([
         </p>
       </div>
       <div class="flex items-center gap-3">
-        <Button variant="outline"> Unduh Laporan </Button>
+        <Button variant="outline" class="text-stone-800 hover:bg-black/5">
+          Unduh Laporan
+        </Button>
         <Button variant="primary">
           <Plus class="w-4 h-4 mr-2" />
           Produk Baru

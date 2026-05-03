@@ -48,7 +48,7 @@ const selectedValue = computed({
   <Select v-model="selectedValue">
     <SelectTrigger
       :class="[
-        'bg-white border-stone-200 rounded-none h-12 text-[10px] font-bold uppercase tracking-widest text-stone-600 focus:ring-amber-600/20 focus:border-amber-600 transition-all',
+        'bg-white border-stone-200 rounded-none h-12 text-stone-600 focus:ring-amber-600/20 focus:border-amber-600 transition-all',
         props.class,
       ]"
     >
@@ -60,7 +60,7 @@ const selectedValue = computed({
           v-for="opt in options"
           :key="opt.value"
           :value="opt.value"
-          class="rounded-none text-xs font-bold uppercase tracking-widest text-stone-600 focus:bg-amber-50 focus:text-amber-900 cursor-pointer"
+          class="rounded-none text-stone-600 focus:bg-amber-50 focus:text-amber-900 cursor-pointer"
         >
           {{ opt.label }}
         </SelectItem>

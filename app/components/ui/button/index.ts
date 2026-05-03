@@ -16,11 +16,10 @@ export const buttonVariants = cva(
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
-        primary:
-          "bg-amber-600 text-white hover:bg-amber-700 font-bold uppercase tracking-widest text-[10px]",
+        primary: "bg-amber-600 text-white hover:bg-amber-700",
         hero: "bg-amber-100 text-amber-900 border-2 border-amber-900 hover:bg-amber-200 shadow-lg shadow-amber-900/10",
         outline:
-          "border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 font-bold uppercase tracking-widest text-[10px]",
+          "border border-stone-200 bg-transparent text-white hover:bg-white/10",
       },
       size: {
         default: "h-11 px-6 py-2 has-[>svg]:px-4",
