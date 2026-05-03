@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronDown } from "lucide-vue-next";
-import MobileNavbar from "./mobile-navbar.vue";
+import { MobileNavbar } from "@/components/dashboard";
 import {
   DropdownMenu,
   DropdownMenuContent,
