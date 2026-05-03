@@ -6,6 +6,7 @@ import { ref } from "vue";
 
 definePageMeta({
   layout: "dashboard",
+  middleware: ["auth"],
 });
 
 const stats = [

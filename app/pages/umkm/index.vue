@@ -33,6 +33,7 @@ import {
 
 definePageMeta({
   layout: "dashboard",
+  middleware: ["auth"],
 });
 
 const columns = [

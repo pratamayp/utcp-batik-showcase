@@ -10,6 +10,7 @@ import Textarea from "@/components/ui/textarea/Textarea.vue";
 
 definePageMeta({
   layout: "dashboard",
+  middleware: ["auth"],
 });
 
 const schema = toTypedSchema(

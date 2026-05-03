@@ -20,7 +20,10 @@ export default defineNuxtConfig({
     },
   },
 
-  modules: ["shadcn-nuxt", "@nuxt/eslint"],
+  modules: ["shadcn-nuxt", "@nuxt/eslint", "@nuxtjs/supabase"],
+  supabase: {
+    redirect: false,
+  },
   shadcn: {
     /**
      * Prefix for all the imported component.

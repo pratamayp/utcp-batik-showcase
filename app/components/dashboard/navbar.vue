@@ -9,6 +9,14 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+
+const supabase = useSupabaseClient();
+const router = useRouter();
+
+const handleLogout = async () => {
+  await supabase.auth.signOut();
+  router.push("/login");
+};
 </script>
 
 <template>
@@ -61,12 +69,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
               >Profil Pengguna</DropdownMenuItem
             >
             <DropdownMenuSeparator class="bg-stone-100" />
-            <NuxtLink href="/login">
-              <DropdownMenuItem
-                class="cursor-pointer text-rose-600 focus:bg-rose-50 focus:text-rose-700"
-                >Keluar Panel
-              </DropdownMenuItem>
-            </NuxtLink>
+            <DropdownMenuItem
+              class="cursor-pointer text-rose-600 focus:bg-rose-50 focus:text-rose-700"
+              @click="handleLogout"
+            >
+              Log Out
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

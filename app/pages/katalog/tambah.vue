@@ -18,6 +18,7 @@ import { ImageDropzone } from "@/components/dashboard";
 
 definePageMeta({
   layout: "dashboard",
+  middleware: ["auth"],
 });
 
 const schema = toTypedSchema(
