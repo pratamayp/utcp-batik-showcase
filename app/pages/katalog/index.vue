@@ -1,3 +1,4 @@
+<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { Plus, Search, MoreVertical, Edit2, Trash2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Switch } from "@/components/ui/switch";
+
+// Delete Confirmation logic
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 definePageMeta({
   layout: "dashboard",
@@ -110,6 +123,25 @@ const currentPage = computed({
     router.push({ query });
   },
 });
+
+const isDeleteDialogOpen = ref(false);
+const itemToDelete = ref<any>(null);
+
+const openDeleteDialog = (item: any) => {
+  itemToDelete.value = item;
+  isDeleteDialogOpen.value = true;
+};
+
+const handleDelete = () => {
+  if (itemToDelete.value) {
+    products.value = products.value.filter(
+      (p) => p.id !== itemToDelete.value.id,
+    );
+    itemToDelete.value = null;
+    isDeleteDialogOpen.value = false;
+    alert("Produk berhasil dihapus");
+  }
+};
 </script>
 
 <template>
@@ -207,7 +239,7 @@ const currentPage = computed({
         </template>
 
         <!-- Actions Column -->
-        <template #cell-actions="">
+        <template #cell-actions="{ row }">
           <DropdownMenu>
             <DropdownMenuTrigger as-child>
               <button
@@ -228,6 +260,7 @@ const currentPage = computed({
               </DropdownMenuItem>
               <DropdownMenuItem
                 class="cursor-pointer text-xs font-bold uppercase tracking-widest text-rose-600 focus:bg-rose-50 focus:text-rose-700"
+                @click="openDeleteDialog(row)"
               >
                 <Trash2 class="w-3.5 h-3.5 mr-2" />
                 Hapus
@@ -243,5 +276,42 @@ const currentPage = computed({
         :items-per-page="5"
       />
     </div>
+
+    <!-- Delete Confirmation Dialog -->
+    <AlertDialog v-model:open="isDeleteDialogOpen">
+      <AlertDialogContent
+        class="rounded-none border-stone-200 shadow-2xl max-w-md"
+      >
+        <AlertDialogHeader>
+          <AlertDialogTitle
+            class="text-base font-bold text-stone-900 uppercase tracking-widest"
+          >
+            Konfirmasi Hapus Produk
+          </AlertDialogTitle>
+          <AlertDialogDescription
+            class="text-xs text-stone-500 font-body leading-relaxed"
+          >
+            Apakah Anda yakin ingin menghapus
+            <span class="font-bold text-stone-900 italic"
+              >"{{ itemToDelete?.name }}"</span
+            >? Tindakan ini tidak dapat dibatalkan dan produk akan dihapus
+            permanen dari katalog.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter class="mt-6">
+          <AlertDialogCancel
+            class="rounded-none border-stone-200 text-[10px] font-bold uppercase tracking-widest text-stone-600 hover:bg-stone-50"
+          >
+            Batal
+          </AlertDialogCancel>
+          <AlertDialogAction
+            class="rounded-none bg-rose-600 text-white hover:bg-rose-700 text-[10px] font-bold uppercase tracking-widest"
+            @click="handleDelete"
+          >
+            Ya, Hapus Produk
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
