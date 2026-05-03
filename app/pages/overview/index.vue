@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { LayoutGrid, Store, Eye, Plus, ArrowUpRight } from "lucide-vue-next";
+import { Button } from "@/components/ui/button";
 
 definePageMeta({
   layout: "dashboard",
@@ -73,17 +74,11 @@ const recentItems = [
         </p>
       </div>
       <div class="flex items-center gap-3">
-        <button
-          class="flex items-center gap-2 bg-white border border-stone-200 px-4 py-2 text-xs font-bold uppercase tracking-widest text-stone-600 hover:bg-stone-50 transition-all rounded-none"
-        >
-          Unduh Laporan
-        </button>
-        <button
-          class="flex items-center gap-2 bg-amber-600 px-4 py-2 text-xs font-bold uppercase tracking-widest text-white hover:bg-amber-700 transition-all rounded-none shadow-sm"
-        >
-          <Plus class="w-4 h-4" />
+        <Button variant="outline"> Unduh Laporan </Button>
+        <Button variant="primary">
+          <Plus class="w-4 h-4 mr-2" />
           Produk Baru
-        </button>
+        </Button>
       </div>
     </div>
 

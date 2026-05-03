@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Plus, Search, MoreVertical, Edit2, Trash2 } from "lucide-vue-next";
-import { DashboardPagination, DashboardTable } from "@/components/dashboard";
+import { Button } from "@/components/ui/button";
+import DashboardTable from "@/components/dashboard/DashboardTable.vue";
+import DashboardPagination from "@/components/dashboard/DashboardPagination.vue";
+import DashboardSelect from "@/components/dashboard/DashboardSelect.vue";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -121,12 +124,12 @@ const currentPage = computed({
           Kelola seluruh koleksi batik dan publikasi katalog digital.
         </p>
       </div>
-      <button
-        class="flex items-center gap-2 bg-amber-600 px-6 py-3 text-xs font-bold uppercase tracking-widest text-white hover:bg-amber-700 transition-all rounded-none shadow-sm"
-      >
-        <Plus class="w-4 h-4" />
-        Tambah Produk
-      </button>
+      <NuxtLink href="/katalog/tambah">
+        <Button variant="primary">
+          <Plus class="w-4 h-4" />
+          Tambah Produk
+        </Button>
+      </NuxtLink>
     </div>
 
     <!-- Filters & Search -->
