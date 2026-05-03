@@ -227,17 +227,15 @@ const onSubmit = handleSubmit((values) => {
       </div>
 
       <!-- Submit Section -->
-      <div class="">
-        <Button
-          variant="primary"
-          size="lg"
-          class="w-full md:w-auto min-w-50"
-          @click="onSubmit"
-        >
-          <Save class="size-5 mr-2" />
-          Simpan Produk
-        </Button>
-      </div>
+      <Button
+        variant="primary"
+        size="lg"
+        class="w-full md:w-auto min-w-50"
+        @click="onSubmit"
+      >
+        <Save class="size-5 mr-2" />
+        Simpan Produk
+      </Button>
     </div>
   </div>
 </template>
