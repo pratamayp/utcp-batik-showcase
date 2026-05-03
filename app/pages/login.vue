@@ -8,17 +8,26 @@ import { Input } from "@/components/ui/input";
 import { InputGroup } from "@/components/ui/input-group";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const router = useRouter();
+definePageMeta({
+  middleware: ["guest"],
+});
+
+const supabase = useSupabaseClient();
+const user = useSupabaseUser();
+
+watchEffect(() => {
+  if (user.value) {
+    navigateTo("/overview");
+  }
+});
 
 const isVisible = ref(false);
+const authError = ref("");
 
 // Define validation schema
 const schema = toTypedSchema(
   z.object({
-    email: z
-      .string()
-      .min(1, "Email wajib diisi")
-      .email("Format email tidak valid"),
+    email: z.email("Format email tidak valid").min(1, "Email wajib diisi"),
     password: z.string().min(6, "Kata sandi minimal 6 karakter"),
   }),
 );
@@ -32,18 +41,23 @@ const form = useForm({
   },
 });
 
-const { handleSubmit, errors, defineField, isSubmitting } = form;
+const { handleSubmit, errors, defineField, isSubmitting, submitCount } = form;
 
 // Define fields with v-model compatibility
 const [email, emailProps] = defineField("email");
 const [password, passwordProps] = defineField("password");
 
-const onSubmit = handleSubmit((values) => {
-  console.log("Form Submitted:", values);
-  // Simulate login delay
-  setTimeout(() => {
-    router.push("/overview");
-  }, 1000);
+const onSubmit = handleSubmit(async (values) => {
+  authError.value = "";
+  const { error } = await supabase.auth.signInWithPassword({
+    email: values.email,
+    password: values.password,
+  });
+
+  if (error) {
+    authError.value = "Email atau kata sandi tidak valid.";
+  }
+  // If successful, the watchEffect will handle the redirect once the user state updates
 });
 </script>
 
@@ -116,6 +130,13 @@ const onSubmit = handleSubmit((values) => {
         </div>
 
         <form class="space-y-6" @submit="onSubmit">
+          <div
+            v-if="authError"
+            class="p-4 rounded-md bg-destructive/10 text-destructive text-sm font-medium border border-destructive/20"
+          >
+            {{ authError }}
+          </div>
+
           <div class="space-y-5">
             <!-- Email Input -->
             <div class="space-y-2">
@@ -128,7 +149,7 @@ const onSubmit = handleSubmit((values) => {
                 class="h-14"
                 :class="{
                   'border-destructive ring-destructive/20 ring-[3px]':
-                    errors?.email,
+                    submitCount > 0 && errors?.email,
                 }"
               >
                 <div data-align="inline-start" class="pl-4 pr-2 text-stone-400">
@@ -143,7 +164,7 @@ const onSubmit = handleSubmit((values) => {
                 />
               </InputGroup>
               <p
-                v-if="errors?.email"
+                v-if="submitCount > 0 && errors?.email"
                 class="text-[10px] text-destructive font-bold uppercase tracking-wider ml-1 mt-1"
               >
                 {{ errors.email }}
@@ -162,7 +183,7 @@ const onSubmit = handleSubmit((values) => {
                   class="h-14"
                   :class="{
                     'border-destructive ring-destructive/20 ring-[3px]':
-                      errors?.password,
+                      submitCount > 0 && errors?.password,
                   }"
                 >
                   <div
@@ -181,7 +202,7 @@ const onSubmit = handleSubmit((values) => {
                   />
                 </InputGroup>
                 <p
-                  v-if="errors?.password"
+                  v-if="submitCount > 0 && errors?.password"
                   class="text-[10px] text-destructive font-bold uppercase tracking-wider ml-1 mt-1"
                 >
                   {{ errors.password }}

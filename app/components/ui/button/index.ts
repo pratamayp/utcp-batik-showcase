@@ -17,21 +17,21 @@ export const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
         primary:
-          "bg-amber-700 text-amber-100 border-2 border-amber-900 hover:bg-amber-800 shadow-lg shadow-amber-900/10",
+          "bg-amber-600 text-white hover:bg-amber-700 font-bold uppercase tracking-widest text-[10px]",
         hero: "bg-amber-100 text-amber-900 border-2 border-amber-900 hover:bg-amber-200 shadow-lg shadow-amber-900/10",
         outline:
-          "border-2 border-white bg-transparent text-white hover:bg-white/10",
+          "border border-stone-200 bg-white text-stone-600 hover:bg-stone-50 font-bold uppercase tracking-widest text-[10px]",
       },
       size: {
-        default: "h-9 px-4 py-2 has-[>svg]:px-3",
-        sm: "h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-12 px-8 text-base has-[>svg]:px-6",
+        default: "h-11 px-6 py-2 has-[>svg]:px-4",
+        sm: "h-8 rounded-none gap-1.5 px-3 has-[>svg]:px-2.5",
+        lg: "h-14 px-10 text-base has-[>svg]:px-8",
         icon: "size-9",
         "icon-sm": "size-8",
         "icon-lg": "size-10",
       },
       rounded: {
-        default: "rounded-md",
+        default: "rounded-none",
         none: "rounded-none",
         full: "rounded-full",
       },
@@ -39,7 +39,7 @@ export const buttonVariants = cva(
     defaultVariants: {
       variant: "default",
       size: "default",
-      rounded: "default",
+      rounded: "none",
     },
   },
 );

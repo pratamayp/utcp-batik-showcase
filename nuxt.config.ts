@@ -8,9 +8,22 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      include: [
+        "@vueuse/core",
+        "lucide-vue-next",
+        "reka-ui",
+        "clsx",
+        "tailwind-merge",
+        "class-variance-authority",
+      ],
+    },
   },
 
-  modules: ["shadcn-nuxt", "@nuxt/eslint"],
+  modules: ["shadcn-nuxt", "@nuxt/eslint", "@nuxtjs/supabase"],
+  supabase: {
+    redirect: false,
+  },
   shadcn: {
     /**
      * Prefix for all the imported component.
