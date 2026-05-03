@@ -11,6 +11,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { Switch } from "@/components/ui/switch";
+
 definePageMeta({
   layout: "dashboard",
 });
@@ -24,13 +26,13 @@ const columns = [
   { key: "actions", label: "", class: "w-10" },
 ];
 
-const products = [
+const products = ref([
   {
     id: 1,
     name: "Batik Parang Kencana",
     umkm: "Batik Solo Indah",
     category: "Tulis",
-    status: "Published",
+    isActive: true,
     image: "/images/batik-1.webp",
   },
   {
@@ -38,7 +40,7 @@ const products = [
     name: "Batik Megamendung Blue",
     umkm: "Cirebon Heritage",
     category: "Cap",
-    status: "Published",
+    isActive: true,
     image: "/images/batik-2.webp",
   },
   {
@@ -46,7 +48,7 @@ const products = [
     name: "Batik Kawung Modern",
     umkm: "Jogja Art",
     category: "Tulis",
-    status: "Draft",
+    isActive: false,
     image: "/images/batik-3.webp",
   },
   {
@@ -54,7 +56,7 @@ const products = [
     name: "Batik Sidomukti Gold",
     umkm: "Solo Heritage",
     category: "Tulis",
-    status: "Published",
+    isActive: true,
     image: "/images/batik-1.webp",
   },
   {
@@ -62,10 +64,10 @@ const products = [
     name: "Batik Truntum Biru",
     umkm: "Pekalongan Jaya",
     category: "Kombinasi",
-    status: "Archive",
+    isActive: false,
     image: "/images/batik-2.webp",
   },
-];
+]);
 
 const route = useRoute();
 const router = useRouter();
@@ -193,22 +195,15 @@ const currentPage = computed({
 
         <!-- Status Column -->
         <template #cell-status="{ row }">
-          <span
-            :class="[
-              row.status === 'Published'
-                ? 'text-emerald-700 bg-emerald-50'
-                : row.status === 'Draft'
-                  ? 'text-stone-500 bg-stone-100'
-                  : 'text-rose-700 bg-rose-50',
-              'text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-none border',
-            ]"
-            :style="{
-              borderColor: 'currentColor',
-              borderWidth: '0.5px',
-            }"
-          >
-            {{ row.status }}
-          </span>
+          <div class="flex items-center gap-3">
+            <Switch v-model:checked="row.isActive" />
+            <span
+              class="text-[10px] font-bold uppercase tracking-widest transition-colors"
+              :class="row.isActive ? 'text-emerald-600' : 'text-stone-400'"
+            >
+              {{ row.isActive ? "Aktif" : "Non-Aktif" }}
+            </span>
+          </div>
         </template>
 
         <!-- Actions Column -->

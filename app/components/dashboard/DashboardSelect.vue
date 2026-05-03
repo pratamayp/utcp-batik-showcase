@@ -25,17 +25,21 @@ const route = useRoute();
 const router = useRouter();
 
 const selectedValue = computed({
-  get: () => (route.query[props.paramKey] as string) || props.defaultValue || "",
+  get: () =>
+    (route.query[props.paramKey] as string) || props.defaultValue || "",
   set: (val) => {
-    const query = { ...route.query };
+    // Create a new query object without the target param and page param to avoid dynamic delete
+    const newQuery = Object.fromEntries(
+      Object.entries(route.query).filter(
+        ([key]) => key !== props.paramKey && key !== "page",
+      ),
+    );
+
     if (val && val !== "all") {
-      query[props.paramKey] = val;
-    } else {
-      delete query[props.paramKey];
+      newQuery[props.paramKey] = val;
     }
-    // Reset page to 1 when filter changes
-    delete query.page;
-    router.push({ query });
+
+    router.push({ query: newQuery });
   },
 });
 </script>
@@ -45,7 +49,7 @@ const selectedValue = computed({
     <SelectTrigger
       :class="[
         'bg-white border-stone-200 rounded-none h-12 text-[10px] font-bold uppercase tracking-widest text-stone-600 focus:ring-amber-600/20 focus:border-amber-600 transition-all',
-        props.class
+        props.class,
       ]"
     >
       <SelectValue :placeholder="placeholder" />

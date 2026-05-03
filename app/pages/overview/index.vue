@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { LayoutGrid, Store, Eye, Plus, ArrowUpRight } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { ref } from "vue";
 
 definePageMeta({
   layout: "dashboard",
@@ -33,29 +35,36 @@ const stats = [
   },
 ];
 
-const recentItems = [
+const recentItems = ref([
   {
     id: 1,
     name: "Batik Parang Kencana",
     umkm: "Batik Solo Indah",
     date: "2 jam yang lalu",
-    status: "Published",
+    isActive: true,
   },
   {
     id: 2,
     name: "Batik Megamendung Blue",
     umkm: "Cirebon Heritage",
     date: "5 jam yang lalu",
-    status: "Published",
+    isActive: true,
   },
   {
     id: 3,
     name: "Batik Kawung Modern",
     umkm: "Jogja Art",
     date: "Kemarin",
-    status: "Draft",
+    isActive: false,
   },
-];
+  {
+    id: 4,
+    name: "Batik Sidomukti Gold",
+    umkm: "Solo Heritage",
+    date: "2 hari yang lalu",
+    isActive: true,
+  },
+]);
 </script>
 
 <template>
@@ -174,16 +183,17 @@ const recentItems = [
                   <p class="text-xs text-stone-400">{{ item.date }}</p>
                 </td>
                 <td class="px-6 py-4">
-                  <span
-                    :class="[
-                      item.status === 'Published'
-                        ? 'text-emerald-700 bg-emerald-50'
-                        : 'text-stone-500 bg-stone-100',
-                      'text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-none',
-                    ]"
-                  >
-                    {{ item.status }}
-                  </span>
+                  <div class="flex items-center gap-3">
+                    <Switch v-model:checked="item.isActive" />
+                    <span
+                      class="text-[10px] font-bold uppercase tracking-widest transition-colors"
+                      :class="
+                        item.isActive ? 'text-emerald-600' : 'text-stone-400'
+                      "
+                    >
+                      {{ item.isActive ? "Aktif" : "Non-Aktif" }}
+                    </span>
+                  </div>
                 </td>
               </tr>
             </tbody>
