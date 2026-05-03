@@ -28,7 +28,9 @@ const schema = toTypedSchema(
     deskripsi: z.string().min(10, "Deskripsi minimal 10 karakter"),
     filosofi: z.string().min(10, "Filosofi minimal 10 karakter"),
     umkm: z.string().min(1, "Silahkan pilih UMKM"),
-    images: z.array(z.any()).min(1, "Minimal harus mengunggah 1 gambar produk"),
+    images: z
+      .array(z.custom<File>())
+      .min(1, "Minimal harus mengunggah 1 gambar produk"),
   }),
 );
 
@@ -218,7 +220,10 @@ const onSubmit = handleSubmit((values) => {
           </h2>
         </div>
 
-        <ImageDropzone v-model="images as File[]" />
+        <ImageDropzone
+          :model-value="images || []"
+          @update:model-value="images = $event"
+        />
         <p
           v-if="errors.images"
           class="text-[10px] text-rose-600 font-bold uppercase tracking-wider"
