@@ -91,12 +91,13 @@
       <!-- Simplified Action Button -->
       <div class="pt-2">
         <Button
+          as-child
           variant="primary"
           size="lg"
           rounded="none"
           class="w-full h-12 text-xs uppercase tracking-[0.2em] font-bold"
         >
-          Detail Produk
+          <NuxtLink :to="`/koleksi/${product.id}`"> Detail Produk </NuxtLink>
         </Button>
       </div>
     </div>
