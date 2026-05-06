@@ -33,7 +33,7 @@ const emit = defineEmits<{
       :items-per-page="itemsPerPage"
       :sibling-count="1"
       show-edges
-      :default-page="currentPage"
+      :page="currentPage"
       class="justify-end"
       @update:page="emit('update:currentPage', $event)"
     >

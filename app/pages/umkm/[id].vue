@@ -10,17 +10,27 @@ import {
 import { useForm } from "vee-validate";
 import * as z from "zod";
 import { toTypedSchema } from "@vee-validate/zod";
-
+import { toast } from "vue-sonner";
 import { Button } from "@/components/ui/button";
 import Input from "@/components/ui/input/Input.vue";
 import Textarea from "@/components/ui/textarea/Textarea.vue";
-
-import { toast } from "vue-sonner";
+import type { UmkmRow } from "~~/server/types/umkm.type";
 
 definePageMeta({
   layout: "dashboard",
   middleware: ["auth"],
 });
+
+const route = useRoute();
+const id = route.params.id;
+
+// Fetch initial data
+const { data: umkm, error } = await useFetch<UmkmRow>(`/api/umkm/${id}`);
+
+if (error.value || !umkm.value) {
+  toast.error("Gagal memuat data UMKM");
+  navigateTo("/umkm");
+}
 
 const schema = toTypedSchema(
   z.object({
@@ -34,10 +44,10 @@ const schema = toTypedSchema(
 const { handleSubmit, errors, defineField, isSubmitting } = useForm({
   validationSchema: schema,
   initialValues: {
-    name: "",
-    contact: "",
-    location: "",
-    description: "",
+    name: umkm.value?.nama || "",
+    contact: umkm.value?.no_hp || "",
+    location: umkm.value?.lokasi || "",
+    description: umkm.value?.deskripsi || "",
   },
 });
 
@@ -48,25 +58,21 @@ const [description] = defineField("description");
 
 const onSubmit = handleSubmit(async (values) => {
   try {
-    await $fetch("/api/umkm", {
-      method: "POST",
+    await $fetch(`/api/umkm/${id}`, {
+      method: "PUT",
       body: {
         nama: values.name,
         no_hp: values.contact,
         lokasi: values.location,
         deskripsi: values.description,
-        is_active: true,
       },
     });
 
-    toast.success("Mitra UMKM berhasil ditambahkan", {
-      description: `UMKM ${values.name} telah terdaftar dalam sistem.`,
-    });
-
+    toast.success("Profil UMKM berhasil diperbarui");
     navigateTo("/umkm");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    toast.error("Gagal menambahkan UMKM", {
+    toast.error("Gagal memperbarui UMKM", {
       description: error.message || "Terjadi kesalahan pada server.",
     });
   }
@@ -88,10 +94,10 @@ const onSubmit = handleSubmit(async (values) => {
         </NuxtLink>
         <div>
           <h1 class="text-2xl font-heading text-stone-900 uppercase">
-            Tambah <span class="text-amber-700">Mitra UMKM</span>
+            Edit <span class="text-amber-700">Profil UMKM</span>
           </h1>
           <p class="text-stone-500 font-body text-xs mt-1">
-            Daftarkan mitra pengrajin baru ke dalam sistem ekosistem Batik.
+            Perbarui informasi detail mitra pengrajin batik.
           </p>
         </div>
       </div>
@@ -219,7 +225,7 @@ const onSubmit = handleSubmit(async (values) => {
         >
           <Save v-if="!isSubmitting" class="size-5 mr-2" />
           <Loader2 v-else class="size-5 mr-2 animate-spin" />
-          {{ isSubmitting ? "Menyimpan..." : "Tambah UMKM" }}
+          {{ isSubmitting ? "Memperbarui..." : "Simpan Perubahan" }}
         </Button>
       </div>
     </div>
