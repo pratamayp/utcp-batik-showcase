@@ -77,7 +77,7 @@
           </div>
         </div>
 
-        <div class="flex flex-col items-end gap-1.5">
+        <!-- <div class="flex flex-col items-end gap-1.5">
           <div class="flex items-center gap-1 text-stone-400">
             <MapPin class="size-3" />
             <span
@@ -85,7 +85,7 @@
               >{{ product.umkmLocation }}</span
             >
           </div>
-        </div>
+        </div> -->
       </div>
 
       <!-- Simplified Action Button -->
@@ -105,7 +105,6 @@
 </template>
 
 <script setup>
-import { MapPin } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 
 defineProps({

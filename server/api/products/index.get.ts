@@ -9,14 +9,25 @@ export default defineEventHandler(async (event) => {
   const limit = parseInt(query.limit as string) || 10;
   const search = (query.search as string) || "";
   const sort = (query.sort as string) || "newest";
+  const asal = (query.asal as string) || "";
+  const activeOnly = query.active_only === "true";
 
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
   let dbQuery = client
     .from("products")
-    .select("*, umkm(nama)", { count: "exact" })
+    .select("*, umkm(nama, lokasi, no_hp)", { count: "exact" })
     .is("deleted_at", null);
+
+  if (activeOnly) {
+    dbQuery = dbQuery.is("is_active", true);
+  }
+
+  // Filter by location
+  if (asal && asal !== "Semua") {
+    dbQuery = dbQuery.eq("asal_daerah", asal);
+  }
 
   // Search logic
   if (search) {

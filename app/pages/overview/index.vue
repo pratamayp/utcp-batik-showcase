@@ -1,4 +1,3 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
 import { LayoutGrid, Store, Eye, Plus, ArrowUpRight } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/id"; // Import Indonesian locale
 import { toast } from "vue-sonner";
-import type { ProductRow } from "~~/server/types/product.type";
+import type { ProductWithUmkm } from "~~/server/types/product.type";
 
 dayjs.extend(relativeTime);
 dayjs.locale("id");
@@ -29,7 +28,7 @@ interface OverviewResponse {
     totalUmkm: StatValue;
     totalVisits: StatValue;
   };
-  recentProducts: (ProductRow & { umkm: { nama: string } })[];
+  recentProducts: ProductWithUmkm[];
 }
 
 const { data: overviewData, refresh } =

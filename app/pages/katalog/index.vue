@@ -71,6 +71,8 @@ const { data: response, refresh } = await useFetch<ProductResponse>(
   },
 );
 
+console.log("response", response.value);
+
 const productList = computed(() => response.value?.data || []);
 const totalItems = computed(() => response.value?.pagination.total || 0);
 
