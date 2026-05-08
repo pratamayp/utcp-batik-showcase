@@ -2,70 +2,86 @@
 import { LayoutGrid, Store, Eye, Plus, ArrowUpRight } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { ref } from "vue";
+import { computed } from "vue";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/id"; // Import Indonesian locale
+import { toast } from "vue-sonner";
+import type { ProductWithUmkm } from "~~/server/types/product.type";
+
+dayjs.extend(relativeTime);
+dayjs.locale("id");
 
 definePageMeta({
   layout: "dashboard",
   middleware: ["auth"],
 });
 
-const stats = [
+interface StatValue {
+  value: number;
+  change: string;
+}
+
+interface OverviewResponse {
+  stats: {
+    totalProducts: StatValue;
+    totalUmkm: StatValue;
+    totalVisits: StatValue;
+  };
+  recentProducts: ProductWithUmkm[];
+}
+
+const { data: overviewData, refresh } =
+  await useFetch<OverviewResponse>("/api/overview");
+
+const stats = computed(() => [
   {
     name: "Total Produk",
-    value: "124",
-    change: "+12%",
+    value: overviewData.value?.stats.totalProducts.value || 0,
+    change: overviewData.value?.stats.totalProducts.change || "+0%",
     icon: LayoutGrid,
     color: "text-blue-600",
     bg: "bg-blue-50",
   },
   {
     name: "Mitra UMKM",
-    value: "18",
-    change: "+2",
+    value: overviewData.value?.stats.totalUmkm.value || 0,
+    change: overviewData.value?.stats.totalUmkm.change || "+0",
     icon: Store,
     color: "text-amber-600",
     bg: "bg-amber-50",
   },
   {
     name: "Total Kunjungan",
-    value: "2,840",
-    change: "+18.4%",
+    value: overviewData.value?.stats.totalVisits.value || 0,
+    change: overviewData.value?.stats.totalVisits.change || "+0%",
     icon: Eye,
     color: "text-emerald-600",
     bg: "bg-emerald-50",
   },
-];
-
-const recentItems = ref([
-  {
-    id: 1,
-    name: "Batik Parang Kencana",
-    umkm: "Batik Solo Indah",
-    date: "2 jam yang lalu",
-    isActive: true,
-  },
-  {
-    id: 2,
-    name: "Batik Megamendung Blue",
-    umkm: "Cirebon Heritage",
-    date: "5 jam yang lalu",
-    isActive: true,
-  },
-  {
-    id: 3,
-    name: "Batik Kawung Modern",
-    umkm: "Jogja Art",
-    date: "Kemarin",
-    isActive: false,
-  },
-  {
-    id: 4,
-    name: "Batik Sidomukti Gold",
-    umkm: "Solo Heritage",
-    date: "2 hari yang lalu",
-    isActive: true,
-  },
 ]);
+
+const recentItems = computed(() => overviewData.value?.recentProducts || []);
+
+const toggleStatus = async (item: ProductRow) => {
+  try {
+    await $fetch(`/api/products/${item.id}/status`, {
+      method: "PATCH",
+      body: { is_active: item.is_active },
+    });
+    toast.success(`Status ${item.nama} diperbarui`, {
+      description: `Sekarang dalam status ${
+        item.is_active ? "Aktif" : "Non-Aktif"
+      }.`,
+    });
+    refresh();
+  } catch (error: any) {
+    item.is_active = !item.is_active;
+    toast.error("Gagal memperbarui status", {
+      description: error.message || "Terjadi kesalahan pada server.",
+    });
+  }
+};
 </script>
 
 <template>
@@ -80,17 +96,19 @@ const recentItems = ref([
         </h1>
         <p class="text-stone-500 font-body mt-1">
           Selamat datang kembali, Administrator. Berikut adalah performa katalog
-          Anda hari ini.
+          Anda bulan ini.
         </p>
       </div>
       <div class="flex items-center gap-3">
         <Button variant="outline" class="text-stone-800 hover:bg-black/5">
           Unduh Laporan
         </Button>
-        <Button variant="primary">
-          <Plus class="w-4 h-4 mr-2" />
-          Produk Baru
-        </Button>
+        <NuxtLink href="/katalog/tambah">
+          <Button variant="primary">
+            <Plus class="w-4 h-4 mr-2" />
+            Produk Baru
+          </Button>
+        </NuxtLink>
       </div>
     </div>
 
@@ -117,7 +135,7 @@ const recentItems = ref([
             {{ stat.name }}
           </p>
           <h3 class="text-2xl font-heading text-stone-900 mt-1">
-            {{ stat.value }}
+            {{ stat.value.toLocaleString() }}
           </h3>
         </div>
       </div>
@@ -176,27 +194,41 @@ const recentItems = ref([
               >
                 <td class="px-6 py-4">
                   <p class="text-sm font-bold text-stone-900">
-                    {{ item.name }}
+                    {{ item.nama }}
                   </p>
                 </td>
                 <td class="px-6 py-4">
-                  <p class="text-sm text-stone-600">{{ item.umkm }}</p>
+                  <p class="text-sm text-stone-600">
+                    {{ item.umkm?.nama || "-" }}
+                  </p>
                 </td>
                 <td class="px-6 py-4">
-                  <p class="text-xs text-stone-400">{{ item.date }}</p>
+                  <p class="text-xs text-stone-400">
+                    {{ dayjs(item.created_at).fromNow() }}
+                  </p>
                 </td>
                 <td class="px-6 py-4">
                   <div class="flex items-center gap-3">
-                    <Switch v-model:checked="item.isActive" />
+                    <Switch
+                      v-model="item.is_active"
+                      @update:model-value="toggleStatus(item)"
+                    />
                     <span
                       class="text-[10px] font-bold uppercase tracking-widest transition-colors"
                       :class="
-                        item.isActive ? 'text-emerald-600' : 'text-stone-400'
+                        item.is_active ? 'text-emerald-600' : 'text-stone-400'
                       "
                     >
-                      {{ item.isActive ? "Aktif" : "Non-Aktif" }}
+                      {{ item.is_active ? "Aktif" : "Non-Aktif" }}
                     </span>
                   </div>
+                </td>
+              </tr>
+              <tr v-if="recentItems.length === 0">
+                <td colspan="4" class="px-6 py-10 text-center">
+                  <p class="text-xs text-stone-400 uppercase tracking-widest">
+                    Belum ada data produk terbaru
+                  </p>
                 </td>
               </tr>
             </tbody>

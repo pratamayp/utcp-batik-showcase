@@ -23,19 +23,27 @@ import {
 } from "@/components/ui/select";
 import { ImageDropzone } from "@/components/dashboard";
 import type { UmkmRow } from "~~/server/types/umkm.type";
+import type { ProductRow } from "~~/server/types/product.type";
 
 definePageMeta({
   layout: "dashboard",
   middleware: ["auth"],
 });
 
-// Fetch UMKM options from database
-const { data: umkmResponse } = await useFetch<{ data: UmkmRow[] }>(
-  "/api/umkm",
-  {
-    query: { limit: 100 }, // Fetch all UMKM for the dropdown
-  },
-);
+const route = useRoute();
+const id = route.params.id;
+
+// Fetch UMKM options and Product details
+const [{ data: umkmResponse }, { data: product, error: fetchError }] =
+  await Promise.all([
+    useFetch<{ data: UmkmRow[] }>("/api/umkm", { query: { limit: 100 } }),
+    useFetch<ProductRow>(`/api/products/${id}`),
+  ]);
+
+if (fetchError.value || !product.value) {
+  toast.error("Gagal memuat data produk");
+  navigateTo("/katalog");
+}
 
 const umkmOptions = computed(() =>
   (umkmResponse.value?.data || []).map((u) => ({
@@ -59,13 +67,13 @@ const schema = toTypedSchema(
 const { handleSubmit, errors, defineField, isSubmitting } = useForm({
   validationSchema: schema,
   initialValues: {
-    nama: "",
-    asal: "",
-    ringkasan: "",
-    deskripsi: "",
-    filosofi: "",
-    umkm: "",
-    images: [],
+    nama: product.value?.nama || "",
+    asal: product.value?.asal_daerah || "",
+    ringkasan: product.value?.ringkasan || "",
+    deskripsi: product.value?.deskripsi || "",
+    filosofi: product.value?.filosofi || "",
+    umkm: product.value?.umkm_id.toString() || "",
+    images: product.value?.images || [],
   },
 });
 
@@ -92,27 +100,36 @@ const asalOptions = [
 
 const onSubmit = handleSubmit(async (values) => {
   try {
-    // 1. Upload Images first
-    const formData = new FormData();
-    values.images.forEach((file) => {
-      formData.append("files", file);
-    });
+    // 1. Separate existing URLs and new Files
+    const existingUrls = values.images.filter((img) => typeof img === "string");
+    const newFiles = values.images.filter((img) => img instanceof File);
 
-    toast.info("Mengunggah gambar...");
-    const uploadRes = await $fetch<{ success: boolean; urls: string[] }>(
-      "/api/storage/upload",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
+    let finalImages = [...existingUrls];
 
-    if (!uploadRes.success) throw new Error("Gagal mengunggah gambar");
+    // 2. Upload new Files if any
+    if (newFiles.length > 0) {
+      toast.info(`Mengunggah ${newFiles.length} gambar baru...`);
+      const formData = new FormData();
+      newFiles.forEach((file: File) => {
+        formData.append("files", file);
+      });
 
-    // 2. Save Product with the uploaded image URLs
-    toast.info("Menyimpan data produk...");
-    await $fetch("/api/products", {
-      method: "POST",
+      const uploadRes = await $fetch<{ success: boolean; urls: string[] }>(
+        "/api/storage/upload",
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      if (uploadRes.success) {
+        finalImages = [...finalImages, ...uploadRes.urls];
+      }
+    }
+
+    // 3. Update Product
+    await $fetch(`/api/products/${id}`, {
+      method: "PUT",
       body: {
         nama: values.nama,
         asal_daerah: values.asal,
@@ -120,19 +137,18 @@ const onSubmit = handleSubmit(async (values) => {
         deskripsi: values.deskripsi,
         filosofi: values.filosofi,
         umkm_id: Number(values.umkm),
-        images: uploadRes.urls,
-        is_active: true,
+        images: finalImages,
       },
     });
 
-    toast.success("Produk berhasil ditambahkan", {
-      description: `Katalog ${values.nama} kini telah dipublikasikan.`,
+    toast.success("Produk berhasil diperbarui", {
+      description: `Katalog ${values.nama} telah diperbarui dalam sistem.`,
     });
 
     navigateTo("/katalog");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    toast.error("Gagal menambahkan produk", {
+    toast.error("Gagal memperbarui produk", {
       description: error.message || "Terjadi kesalahan pada server.",
     });
   }
@@ -154,10 +170,10 @@ const onSubmit = handleSubmit(async (values) => {
         </NuxtLink>
         <div>
           <h1 class="text-2xl font-heading text-stone-900 uppercase">
-            Tambah <span class="text-amber-700">Produk Baru</span>
+            Edit <span class="text-amber-700">Katalog Produk</span>
           </h1>
           <p class="text-stone-500 font-body text-xs mt-1">
-            Lengkapi detail informasi batik untuk dipublikasikan ke katalog.
+            Perbarui detail informasi batik untuk dipublikasikan ke katalog.
           </p>
         </div>
       </div>
@@ -341,7 +357,7 @@ const onSubmit = handleSubmit(async (values) => {
       >
         <Save v-if="!isSubmitting" class="size-5 mr-2" />
         <Loader2 v-else class="size-5 mr-2 animate-spin" />
-        {{ isSubmitting ? "Menyimpan..." : "Simpan Produk" }}
+        {{ isSubmitting ? "Memperbarui..." : "Simpan Perubahan" }}
       </Button>
     </div>
   </div>

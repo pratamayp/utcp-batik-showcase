@@ -11,9 +11,11 @@ import {
 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import DashboardTable from "@/components/dashboard/DashboardTable.vue";
-import DashboardPagination from "@/components/dashboard/DashboardPagination.vue";
-import DashboardSelect from "@/components/dashboard/DashboardSelect.vue";
+import {
+  DashboardTable,
+  DashboardPagination,
+  DashboardSelect,
+} from "@/components/dashboard";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +32,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { toast } from "vue-sonner";
+import type { UmkmRow } from "~~/server/types/umkm.type";
+
+interface UmkmResponse {
+  data: UmkmRow[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
 
 definePageMeta({
   layout: "dashboard",
@@ -37,53 +51,32 @@ definePageMeta({
 });
 
 const columns = [
-  { key: "name", label: "Nama UMKM" },
-  { key: "contact", label: "Kontak" },
-  { key: "location", label: "Lokasi" },
+  { key: "nama", label: "Nama UMKM" },
+  { key: "no_hp", label: "Kontak" },
+  { key: "lokasi", label: "Lokasi" },
   { key: "status", label: "Status" },
   { key: "actions", label: "", class: "w-10" },
 ];
 
-const umkmList = ref([
-  {
-    id: 1,
-    name: "Batik Solo Indah",
-    contact: "0812-3456-7890",
-    location: "Laweyan, Surakarta",
-    isActive: true,
-  },
-  {
-    id: 2,
-    name: "Cirebon Heritage",
-    contact: "0857-1122-3344",
-    location: "Trusmi, Cirebon",
-    isActive: true,
-  },
-  {
-    id: 3,
-    name: "Jogja Art",
-    contact: "0819-0099-8877",
-    location: "Imogiri, Yogyakarta",
-    isActive: false,
-  },
-  {
-    id: 4,
-    name: "Pekalongan Jaya",
-    contact: "0821-4455-6677",
-    location: "Wiradesa, Pekalongan",
-    isActive: true,
-  },
-  {
-    id: 5,
-    name: "Lasem Classic",
-    contact: "0811-2223-3344",
-    location: "Lasem, Rembang",
-    isActive: false,
-  },
-]);
-
 const route = useRoute();
 const router = useRouter();
+
+const { data: response, refresh } = await useFetch<UmkmResponse>("/api/umkm", {
+  query: computed(() => ({
+    page: route.query.page || 1,
+    search: route.query.search || "",
+    sort: route.query.sort || "newest",
+    limit: 5,
+  })),
+  watch: [
+    () => route.query.page,
+    () => route.query.search,
+    () => route.query.sort,
+  ],
+});
+
+const umkmList = computed(() => response.value?.data || []);
+const totalItems = computed(() => response.value?.pagination.total || 0);
 
 const sortOptions = [
   { label: "Terbaru", value: "newest" },
@@ -126,14 +119,42 @@ const openDeleteDialog = (item: any) => {
   isDeleteDialogOpen.value = true;
 };
 
-const handleDelete = () => {
+const handleDelete = async () => {
   if (itemToDelete.value) {
-    umkmList.value = umkmList.value.filter(
-      (u) => u.id !== itemToDelete.value.id,
-    );
-    itemToDelete.value = null;
-    isDeleteDialogOpen.value = false;
-    alert("Data UMKM berhasil dihapus");
+    try {
+      await $fetch(`/api/umkm/${itemToDelete.value.id}`, {
+        method: "DELETE",
+      });
+      refresh();
+      itemToDelete.value = null;
+      isDeleteDialogOpen.value = false;
+      toast.success("Data UMKM berhasil dihapus");
+    } catch (error: any) {
+      toast.error("Gagal menghapus data", {
+        description: error.message || "Terjadi kesalahan pada server.",
+      });
+    }
+  }
+};
+
+const toggleStatus = async (item: UmkmRow) => {
+  try {
+    await $fetch(`/api/umkm/${item.id}/status`, {
+      method: "PATCH",
+      body: { is_active: item.is_active },
+    });
+    toast.success(`Status ${item.nama} diperbarui`, {
+      description: `Sekarang dalam status ${
+        item.is_active ? "Aktif" : "Non-Aktif"
+      }.`,
+    });
+    refresh();
+  } catch (error: any) {
+    // Revert status on UI if API fails
+    item.is_active = !item.is_active;
+    toast.error("Gagal memperbarui status", {
+      description: error.message || "Terjadi kesalahan pada server.",
+    });
   }
 };
 </script>
@@ -190,9 +211,9 @@ const handleDelete = () => {
     <div class="space-y-4">
       <DashboardTable :columns="columns" :data="umkmList">
         <!-- Name Column -->
-        <template #cell-name="{ row }">
+        <template #cell-nama="{ row }">
           <div class="flex flex-col">
-            <span class="text-sm font-bold text-stone-900">{{ row.name }}</span>
+            <span class="text-sm font-bold text-stone-900">{{ row.nama }}</span>
             <span
               class="text-[10px] font-bold text-stone-400 uppercase tracking-widest"
               >ID: #{{ row.id }}</span
@@ -201,30 +222,33 @@ const handleDelete = () => {
         </template>
 
         <!-- Contact Column -->
-        <template #cell-contact="{ row }">
+        <template #cell-no_hp="{ row }">
           <div class="flex items-center gap-2 text-stone-600">
             <Phone class="w-3 h-3 text-stone-400" />
-            <span class="text-xs">{{ row.contact }}</span>
+            <span class="text-xs">{{ row.no_hp || "-" }}</span>
           </div>
         </template>
 
         <!-- Location Column -->
-        <template #cell-location="{ row }">
+        <template #cell-lokasi="{ row }">
           <div class="flex items-center gap-2 text-stone-600">
             <MapPin class="w-3 h-3 text-stone-400" />
-            <span class="text-xs">{{ row.location }}</span>
+            <span class="text-xs">{{ row.lokasi || "-" }}</span>
           </div>
         </template>
 
         <!-- Status Column -->
         <template #cell-status="{ row }">
           <div class="flex items-center gap-3">
-            <Switch v-model:checked="row.isActive" />
+            <Switch
+              v-model="row.is_active"
+              @update:model-value="toggleStatus(row)"
+            />
             <span
               class="text-[10px] font-bold uppercase tracking-widest transition-colors"
-              :class="row.isActive ? 'text-emerald-600' : 'text-stone-400'"
+              :class="row.is_active ? 'text-emerald-600' : 'text-stone-400'"
             >
-              {{ row.isActive ? "Aktif" : "Non-Aktif" }}
+              {{ row.is_active ? "Aktif" : "Non-Aktif" }}
             </span>
           </div>
         </template>
@@ -243,14 +267,16 @@ const handleDelete = () => {
               align="end"
               class="rounded-none border-stone-200 shadow-xl w-40"
             >
+              <NuxtLink :to="`/umkm/${row.id}`">
+                <DropdownMenuItem
+                  class="cursor-pointer text-xs font-bold uppercase tracking-widest text-stone-600 focus:bg-amber-50 focus:text-amber-900"
+                >
+                  <Edit2 class="w-3.5 h-3.5 mr-2" />
+                  Edit Profil
+                </DropdownMenuItem>
+              </NuxtLink>
               <DropdownMenuItem
-                class="cursor-pointer text-xs font-bold uppercase tracking-widest text-stone-600 focus:bg-amber-50 focus:text-amber-900"
-              >
-                <Edit2 class="w-3.5 h-3.5 mr-2" />
-                Edit Profil
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                class="cursor-pointer text-xs font-bold uppercase tracking-widest text-rose-600 focus:bg-rose-50 focus:text-rose-700"
+                class="cursor-pointer text-xs font-bold uppercase tracking-widest text-red-800 focus:bg-red-100 focus:text-red-900"
                 @click="openDeleteDialog(row)"
               >
                 <Trash2 class="w-3.5 h-3.5 mr-2" />
@@ -263,7 +289,7 @@ const handleDelete = () => {
 
       <DashboardPagination
         v-model:current-page="currentPage"
-        :total="48"
+        :total="totalItems"
         :items-per-page="5"
       />
     </div>
@@ -296,7 +322,7 @@ const handleDelete = () => {
             Batal
           </AlertDialogCancel>
           <AlertDialogAction
-            class="rounded-none bg-rose-600 text-white hover:bg-rose-700 text-[10px] font-bold uppercase tracking-widest"
+            class="rounded-none bg-red-800 text-white hover:bg-red-900 text-[10px] font-bold uppercase tracking-widest"
             @click="handleDelete"
           >
             Ya, Hapus Mitra

@@ -64,17 +64,32 @@
         </div>
       </div>
 
+      <!-- Loading State -->
+      <div
+        v-if="pending"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+      >
+        <div
+          v-for="i in 3"
+          :key="i"
+          class="aspect-3/4 bg-stone-200 animate-pulse"
+        ></div>
+      </div>
+
       <!-- Catalogue Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <LandingProductCard
-          v-for="product in filteredProducts"
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <ProductCard
+          v-for="product in productItems"
           :key="product.id"
           :product="product"
         />
       </div>
 
       <!-- Empty State -->
-      <div v-if="filteredProducts.length === 0" class="py-20 text-center">
+      <div
+        v-if="!pending && productItems.length === 0"
+        class="py-20 text-center"
+      >
         <p class="text-stone-400 font-serif italic text-xl">
           Tidak ada koleksi ditemukan untuk lokasi ini.
         </p>
@@ -94,16 +109,43 @@ import {
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
 } from "@/components/ui/dropdown-menu";
-import { useProducts } from "@/composables/useProducts";
+import ProductCard from "./ProductCard.vue";
 
-const filters = ["Semua", "Solo", "Yogyakarta", "Pekalongan", "Semarang"];
+const filters = [
+  "Semua",
+  "Solo",
+  "Yogyakarta",
+  "Pekalongan",
+  "Semarang",
+  "Bali",
+  "Cirebon",
+  "Garut",
+  "Madura",
+  "Tasikmalaya",
+];
 const activeFilter = ref("Semua");
 
-const { products } = useProducts();
+const { data: response, pending } = await useFetch("/api/products", {
+  query: computed(() => ({
+    asal: activeFilter.value,
+    limit: 12,
+    active_only: true,
+  })),
+  watch: [activeFilter],
+});
 
-const filteredProducts = computed(() => {
-  if (activeFilter.value === "Semua") return products;
-  return products.filter((p) => p.asal === activeFilter.value);
+const productItems = computed(() => {
+  return (response.value?.data || []).map((item) => ({
+    id: item.id,
+    nama: item.nama,
+    asal: item.asal_daerah,
+    image: item.images?.[0] || "/images/hero.webp",
+    deskripsi: item.ringkasan || item.deskripsi,
+    filosofi: item.filosofi,
+    seller: item.umkm?.nama || "Mitra Batik",
+    umkmLocation: item.umkm?.lokasi || item.asal_daerah,
+    umkmPhone: item.umkm?.no_hp,
+  }));
 });
 </script>
 

@@ -8,6 +8,7 @@ export interface UmkmRow {
   instagram: string | null;
   lokasi: string | null;
   deskripsi: string | null;
+  is_active: boolean;
 }
 
 export interface UmkmInsert {
@@ -19,6 +20,7 @@ export interface UmkmInsert {
   instagram?: string | null;
   lokasi?: string | null;
   deskripsi?: string | null;
+  is_active?: boolean;
 }
 
 export interface UmkmUpdate {
@@ -30,4 +32,5 @@ export interface UmkmUpdate {
   instagram?: string | null;
   lokasi?: string | null;
   deskripsi?: string | null;
+  is_active?: boolean;
 }

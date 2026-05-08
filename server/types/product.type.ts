@@ -1,4 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import type { UmkmRow } from "./umkm.type";
+
 export interface ProductRow {
   id: number;
   created_at: string;
@@ -9,8 +10,13 @@ export interface ProductRow {
   deskripsi: string | null;
   filosofi: string | null;
   umkm_id: number;
-  images: any;
+  images: string[];
   ringkasan: string;
+  is_active: boolean;
+}
+
+export interface ProductWithUmkm extends ProductRow {
+  umkm: UmkmRow;
 }
 
 export interface ProductInsert {
@@ -22,8 +28,9 @@ export interface ProductInsert {
   deskripsi?: string | null;
   filosofi?: string | null;
   umkm_id: number;
-  images: any;
+  images: string[];
   ringkasan: string;
+  is_active?: boolean;
 }
 
 export interface ProductUpdate {
@@ -35,6 +42,7 @@ export interface ProductUpdate {
   deskripsi?: string | null;
   filosofi?: string | null;
   umkm_id?: number;
-  images?: any;
+  images?: string[];
   ringkasan?: string;
+  is_active?: boolean;
 }

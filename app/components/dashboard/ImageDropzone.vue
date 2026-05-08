@@ -2,17 +2,41 @@
 import { Upload, X } from "lucide-vue-next";
 
 const props = defineProps<{
-  modelValue: File[];
+  modelValue: (File | string)[];
   maxFiles?: number;
 }>();
 
 const emit = defineEmits<{
-  (e: "update:modelValue", files: File[]): void;
+  (e: "update:modelValue", files: (File | string)[]): void;
 }>();
 
 const isDragging = ref(false);
 const fileInput = ref<HTMLInputElement | null>(null);
-const filePreviews = ref<{ id: string; url: string; name: string }[]>([]);
+const filePreviews = ref<
+  { id: string; url: string; name: string; isExisting: boolean }[]
+>([]);
+
+// Sync modelValue with previews (especially for existing URLs)
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    // Only sync if previews are empty (initial load) or length changed significantly
+    // This is a simple sync logic
+    const currentUrls = filePreviews.value.map((p) => p.url);
+
+    newVal.forEach((item) => {
+      if (typeof item === "string" && !currentUrls.includes(item)) {
+        filePreviews.value.push({
+          id: Math.random().toString(36),
+          url: item,
+          name: item.split("/").pop() || "Existing Image",
+          isExisting: true,
+        });
+      }
+    });
+  },
+  { immediate: true },
+);
 
 const triggerFileInput = () => {
   fileInput.value?.click();
@@ -32,13 +56,14 @@ const handleFileInput = (e: Event) => {
 const addFiles = (newFiles: File[]) => {
   const imageFiles = newFiles.filter((f) => f.type.startsWith("image/"));
 
-  // Create previews
+  // Create previews for new files
   imageFiles.forEach((file) => {
     const url = URL.createObjectURL(file);
     filePreviews.value.push({
       id: Math.random().toString(36),
       url,
       name: file.name,
+      isExisting: false,
     });
   });
 
@@ -49,15 +74,24 @@ const removeFile = (index: number) => {
   const preview = filePreviews.value[index];
   if (!preview) return;
 
-  const newFiles = [...props.modelValue];
-  URL.revokeObjectURL(preview.url);
-  newFiles.splice(index, 1);
+  const newModelValue = [...props.modelValue];
+
+  // If it's a new file, revoke the URL
+  if (!preview.isExisting) {
+    URL.revokeObjectURL(preview.url);
+  }
+
+  // Remove from both modelValue and previews
+  newModelValue.splice(index, 1);
   filePreviews.value.splice(index, 1);
-  emit("update:modelValue", newFiles);
+
+  emit("update:modelValue", newModelValue);
 };
 
 onUnmounted(() => {
-  filePreviews.value.forEach((p) => URL.revokeObjectURL(p.url));
+  filePreviews.value.forEach((p) => {
+    if (!p.isExisting) URL.revokeObjectURL(p.url);
+  });
 });
 </script>
 
@@ -119,7 +153,7 @@ onUnmounted(() => {
         >
           <button
             type="button"
-            class="size-8 bg-rose-600 text-white flex items-center justify-center hover:bg-rose-700 transition-colors"
+            class="size-8 bg-red-800 text-white flex items-center justify-center hover:bg-red-900 transition-colors"
             @click.stop="removeFile(index)"
           >
             <X class="w-4 h-4" />
@@ -127,7 +161,7 @@ onUnmounted(() => {
         </div>
         <div class="absolute bottom-0 inset-x-0 bg-stone-900/80 p-1">
           <p
-            class="text-[8px] text-white truncate px-1 text-center font-sans uppercase tracking-tighter"
+            class="text-[8px] text-white truncate px-1 text-center font-sans tracking-tighter"
           >
             {{ preview.name }}
           </p>
