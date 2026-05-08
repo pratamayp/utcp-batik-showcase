@@ -1,16 +1,6 @@
-<!-- eslint-disable @typescript-eslint/no-explicit-any -->
 <script setup lang="ts">
-import {
-  Plus,
-  Search,
-  MoreVertical,
-  Edit2,
-  Trash2,
-  Phone,
-  MapPin,
-} from "lucide-vue-next";
+import { Plus, Search, MoreVertical, Edit2, Trash2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import {
   DashboardTable,
   DashboardPagination,
@@ -51,10 +41,11 @@ definePageMeta({
 });
 
 const columns = [
-  { key: "nama", label: "Nama UMKM" },
-  { key: "no_hp", label: "Kontak" },
-  { key: "lokasi", label: "Lokasi" },
-  { key: "status", label: "Status" },
+  { key: "nama", label: "Nama UMKM", class: "min-w-[150px]" },
+  { key: "no_hp", label: "Kontak", class: "min-w-[120px]" },
+  { key: "instagram", label: "Instagram", class: "min-w-[120px]" },
+  { key: "lokasi", label: "Lokasi", class: "min-w-[200px]" },
+  { key: "deskripsi", label: "Deskripsi", class: "min-w-[250px]" },
   { key: "actions", label: "", class: "w-10" },
 ];
 
@@ -66,7 +57,7 @@ const { data: response, refresh } = await useFetch<UmkmResponse>("/api/umkm", {
     page: route.query.page || 1,
     search: route.query.search || "",
     sort: route.query.sort || "newest",
-    limit: 5,
+    limit: 10,
   })),
   watch: [
     () => route.query.page,
@@ -87,7 +78,7 @@ const sortOptions = [
 
 // Search logic with URL sync
 const searchQuery = ref((route.query.search as string) || "");
-let searchTimeout: any = null;
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 watch(searchQuery, (val) => {
   if (searchTimeout) clearTimeout(searchTimeout);
@@ -112,9 +103,9 @@ const currentPage = computed({
 
 // Delete Confirmation logic
 const isDeleteDialogOpen = ref(false);
-const itemToDelete = ref<any>(null);
+const itemToDelete = ref<UmkmRow | null>(null);
 
-const openDeleteDialog = (item: any) => {
+const openDeleteDialog = (item: UmkmRow) => {
   itemToDelete.value = item;
   isDeleteDialogOpen.value = true;
 };
@@ -129,32 +120,12 @@ const handleDelete = async () => {
       itemToDelete.value = null;
       isDeleteDialogOpen.value = false;
       toast.success("Data UMKM berhasil dihapus");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error("Gagal menghapus data", {
         description: error.message || "Terjadi kesalahan pada server.",
       });
     }
-  }
-};
-
-const toggleStatus = async (item: UmkmRow) => {
-  try {
-    await $fetch(`/api/umkm/${item.id}/status`, {
-      method: "PATCH",
-      body: { is_active: item.is_active },
-    });
-    toast.success(`Status ${item.nama} diperbarui`, {
-      description: `Sekarang dalam status ${
-        item.is_active ? "Aktif" : "Non-Aktif"
-      }.`,
-    });
-    refresh();
-  } catch (error: any) {
-    // Revert status on UI if API fails
-    item.is_active = !item.is_active;
-    toast.error("Gagal memperbarui status", {
-      description: error.message || "Terjadi kesalahan pada server.",
-    });
   }
 };
 </script>
@@ -213,9 +184,11 @@ const toggleStatus = async (item: UmkmRow) => {
         <!-- Name Column -->
         <template #cell-nama="{ row }">
           <div class="flex flex-col">
-            <span class="text-sm font-bold text-stone-900">{{ row.nama }}</span>
+            <span class="text-sm font-bold text-stone-900 leading-tight">{{
+              row.nama
+            }}</span>
             <span
-              class="text-[10px] font-bold text-stone-400 uppercase tracking-widest"
+              class="text-[9px] font-bold text-stone-400 uppercase tracking-widest mt-1"
               >ID: #{{ row.id }}</span
             >
           </div>
@@ -223,34 +196,32 @@ const toggleStatus = async (item: UmkmRow) => {
 
         <!-- Contact Column -->
         <template #cell-no_hp="{ row }">
-          <div class="flex items-center gap-2 text-stone-600">
-            <Phone class="w-3 h-3 text-stone-400" />
-            <span class="text-xs">{{ row.no_hp || "-" }}</span>
-          </div>
+          <span class="text-xs text-stone-600 wrap-break-word">{{
+            row.no_hp || "-"
+          }}</span>
+        </template>
+
+        <!-- Instagram Column -->
+        <template #cell-instagram="{ row }">
+          <span class="text-xs text-stone-600 wrap-break-word">{{
+            row.instagram || "-"
+          }}</span>
         </template>
 
         <!-- Location Column -->
         <template #cell-lokasi="{ row }">
-          <div class="flex items-center gap-2 text-stone-600">
-            <MapPin class="w-3 h-3 text-stone-400" />
-            <span class="text-xs">{{ row.lokasi || "-" }}</span>
-          </div>
+          <span
+            class="text-xs text-stone-600 whitespace-normal leading-relaxed"
+            >{{ row.lokasi || "-" }}</span
+          >
         </template>
 
-        <!-- Status Column -->
-        <template #cell-status="{ row }">
-          <div class="flex items-center gap-3">
-            <Switch
-              v-model="row.is_active"
-              @update:model-value="toggleStatus(row)"
-            />
-            <span
-              class="text-[10px] font-bold uppercase tracking-widest transition-colors"
-              :class="row.is_active ? 'text-emerald-600' : 'text-stone-400'"
-            >
-              {{ row.is_active ? "Aktif" : "Non-Aktif" }}
-            </span>
-          </div>
+        <!-- Description Column -->
+        <template #cell-deskripsi="{ row }">
+          <span
+            class="text-xs text-stone-600 whitespace-normal leading-relaxed italic"
+            >{{ row.deskripsi || "-" }}</span
+          >
         </template>
 
         <!-- Actions Column -->
@@ -290,7 +261,7 @@ const toggleStatus = async (item: UmkmRow) => {
       <DashboardPagination
         v-model:current-page="currentPage"
         :total="totalItems"
-        :items-per-page="5"
+        :items-per-page="10"
       />
     </div>
 
@@ -310,7 +281,7 @@ const toggleStatus = async (item: UmkmRow) => {
           >
             Apakah Anda yakin ingin menghapus mitra
             <span class="font-bold text-stone-900 italic"
-              >"{{ itemToDelete?.name }}"</span
+              >"{{ itemToDelete?.nama }}"</span
             >? Data sejarah produk dari UMKM ini akan tetap tersimpan namun
             status kemitraan akan dicabut.
           </AlertDialogDescription>

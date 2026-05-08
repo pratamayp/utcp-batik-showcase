@@ -145,6 +145,7 @@ const productItems = computed(() => {
     seller: item.umkm?.nama || "Mitra Batik",
     umkmLocation: item.umkm?.lokasi || item.asal_daerah,
     umkmPhone: item.umkm?.no_hp,
+    umkmInstagram: item.umkm?.instagram,
   }));
 });
 </script>

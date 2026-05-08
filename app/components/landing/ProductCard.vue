@@ -59,7 +59,7 @@
         <div class="flex items-center gap-3">
           <!-- Seller Initial/Avatar -->
           <div
-            class="size-9 bg-amber-50 flex items-center justify-center border border-amber-100"
+            class="size-9 bg-amber-50 flex items-center justify-center border border-amber-200"
           >
             <span class="text-amber-700 font-heading text-sm font-bold">{{
               product.seller.charAt(0)
@@ -71,25 +71,40 @@
               >Koleksi Dari</span
             >
             <span
-              class="block text-sm font-heading text-stone-900 leading-none pb-px line-clamp-1"
+              class="block text-sm font-heading text-stone-900 leading-none line-clamp-1 pb-px"
               >{{ product.seller }}</span
             >
           </div>
         </div>
 
-        <Button
-          v-if="product.umkmPhone"
-          variant="ghost"
-          size="icon"
-          class="size-8 rounded-none hover:bg-transparent shrink-0"
-          @click.stop="contactUMKM"
-        >
-          <img
-            src="/images/whatsapp.webp"
-            alt="WhatsApp"
-            class="size-8 object-contain"
-          />
-        </Button>
+        <div class="flex items-center gap-0.5 shrink-0">
+          <Button
+            v-if="product.umkmInstagram"
+            variant="ghost"
+            size="icon"
+            class="size-8 rounded-none hover:bg-transparent shrink-0"
+            @click.stop="visitInstagram"
+          >
+            <img
+              src="/images/instagram-bw.webp"
+              alt="Instagram"
+              class="size-8 object-contain opacity-60"
+            />
+          </Button>
+          <Button
+            v-if="product.umkmPhone"
+            variant="ghost"
+            size="icon"
+            class="size-8 rounded-none hover:bg-transparent shrink-0"
+            @click.stop="contactUMKM"
+          >
+            <img
+              src="/images/whatsapp-bw.webp"
+              alt="WhatsApp"
+              class="size-8 object-contain opacity-60"
+            />
+          </Button>
+        </div>
       </div>
 
       <!-- Simplified Action Button -->
@@ -121,6 +136,13 @@ const props = defineProps({
 const contactUMKM = () => {
   if (props.product?.umkmPhone) {
     window.open(`https://wa.me/${props.product.umkmPhone}`, "_blank");
+  }
+};
+
+const visitInstagram = () => {
+  if (props.product?.umkmInstagram) {
+    const handle = props.product.umkmInstagram.replace("@", "");
+    window.open(`https://instagram.com/${handle}`, "_blank");
   }
 };
 </script>

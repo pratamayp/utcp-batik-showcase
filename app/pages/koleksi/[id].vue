@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowLeft, MapPin, Share2, Heart } from "lucide-vue-next";
+import { ArrowLeft, MapPin } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -24,6 +24,13 @@ const activeImage = ref(product.value?.images?.[0] || "/images/hero.webp");
 const contactUMKM = () => {
   if (product.value?.umkm?.no_hp) {
     window.open(`https://wa.me/${product.value.umkm.no_hp}`, "_blank");
+  }
+};
+
+const visitInstagram = () => {
+  if (product.value?.umkm?.instagram) {
+    const handle = product.value.umkm.instagram.replace("@", "");
+    window.open(`https://instagram.com/${handle}`, "_blank");
   }
 };
 
@@ -110,24 +117,6 @@ useHead({
             </h1>
           </div>
 
-          <!-- Quick Actions -->
-          <div class="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="icon"
-              class="rounded-none size-12 border-stone-200 text-stone-600 hover:text-rose-600"
-            >
-              <Heart class="size-5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              class="rounded-none size-12 border-stone-200 text-stone-600"
-            >
-              <Share2 class="size-5" />
-            </Button>
-          </div>
-
           <Separator class="bg-stone-200 -mt-6" />
 
           <!-- Description Section -->
@@ -161,7 +150,7 @@ useHead({
           <!-- UMKM / Partner Section -->
           <div class="bg-white border border-stone-200 p-8 space-y-4">
             <div class="flex items-center justify-between gap-4">
-              <div class="flex items-center gap-5">
+              <div class="flex items-center gap-4">
                 <div
                   class="size-14 bg-amber-100 flex items-center justify-center border border-amber-200 shrink-0"
                 >
@@ -180,18 +169,34 @@ useHead({
                   </h4>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                class="size-12 rounded-none hover:bg-transparent shrink-0"
-                @click="contactUMKM"
-              >
-                <img
-                  src="/images/whatsapp.webp"
-                  alt="WhatsApp"
-                  class="size-14 object-contain"
-                />
-              </Button>
+              <div class="flex items-center gap-1 shrink-0">
+                <Button
+                  v-if="product?.umkm?.instagram"
+                  variant="ghost"
+                  size="icon"
+                  class="size-10 rounded-none hover:bg-transparent shrink-0"
+                  @click="visitInstagram"
+                >
+                  <img
+                    src="/images/instagram-bw.webp"
+                    alt="Instagram"
+                    class="size-14 object-contain opacity-60"
+                  />
+                </Button>
+                <Button
+                  v-if="product?.umkm?.no_hp"
+                  variant="ghost"
+                  size="icon"
+                  class="size-10 rounded-none hover:bg-transparent shrink-0"
+                  @click="contactUMKM"
+                >
+                  <img
+                    src="/images/whatsapp-bw.webp"
+                    alt="WhatsApp"
+                    class="size-14 object-contain opacity-60"
+                  />
+                </Button>
+              </div>
             </div>
 
             <div class="space-y-1 border-t border-stone-100 pt-4">

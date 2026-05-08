@@ -17,7 +17,7 @@ export default defineEventHandler(async (event) => {
 
   let dbQuery = client
     .from("products")
-    .select("*, umkm(nama, lokasi, no_hp)", { count: "exact" })
+    .select("*, umkm(nama, lokasi, no_hp, instagram)", { count: "exact" })
     .is("deleted_at", null);
 
   if (activeOnly) {
