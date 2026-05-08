@@ -6,11 +6,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ["~/assets/css/main.css"],
 
-  runtimeConfig: {
-    public: {
-      googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || "",
-    },
-  },
+  // runtimeConfig: {
+  //   public: {
+  //     googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY || "",
+  //   },
+  // },
 
   vite: {
     plugins: [tailwindcss()],
@@ -22,8 +22,6 @@ export default defineNuxtConfig({
         "clsx",
         "tailwind-merge",
         "class-variance-authority",
-        "vue3-google-map",
-        "fast-deep-equal",
       ],
     },
   },

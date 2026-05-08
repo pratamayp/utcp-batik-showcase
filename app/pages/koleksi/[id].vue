@@ -27,6 +27,13 @@ const contactUMKM = () => {
   }
 };
 
+const visitInstagram = () => {
+  if (product.value?.umkm?.instagram) {
+    const handle = product.value.umkm.instagram.replace("@", "");
+    window.open(`https://instagram.com/${handle}`, "_blank");
+  }
+};
+
 useHead({
   title: `${product.value?.nama} | Katalog Batik Nusantara`,
   meta: [
@@ -141,51 +148,69 @@ useHead({
           </div>
 
           <!-- UMKM / Partner Section -->
-          <div class="bg-white border border-stone-200 p-8 space-y-8">
-            <div class="flex items-center gap-5">
-              <div
-                class="size-16 bg-amber-100 flex items-center justify-center border border-amber-200 shrink-0"
-              >
-                <span class="text-amber-700 font-heading text-2xl font-bold">
-                  {{ product?.umkm?.nama?.charAt(0) || "M" }}
-                </span>
-              </div>
-              <div>
-                <span
-                  class="block text-[10px] font-sans font-bold text-amber-600 uppercase tracking-widest leading-none mb-2"
+          <div class="bg-white border border-stone-200 p-8 space-y-4">
+            <div class="flex items-center justify-between gap-4">
+              <div class="flex items-center gap-4">
+                <div
+                  class="size-14 bg-amber-100 flex items-center justify-center border border-amber-200 shrink-0"
                 >
-                  Produksi Dari
-                </span>
-                <h4 class="text-2xl font-heading text-stone-900">
-                  {{ product?.umkm?.nama || "Mitra UMKM" }}
-                </h4>
-              </div>
-            </div>
-
-            <div class="">
-              <div class="space-y-2">
-                <span
-                  class="block text-[10px] text-stone-400 uppercase font-bold tracking-widest"
-                  >Lokasi</span
-                >
-                <div class="flex items-center gap-2 text-stone-700">
-                  <MapPin class="size-4 text-amber-600" />
-                  <span class="text-xs">{{
-                    product?.umkm?.lokasi || product?.asal_daerah || "Nusantara"
-                  }}</span>
+                  <span class="text-amber-700 font-heading text-xl font-bold">
+                    {{ product?.umkm?.nama?.charAt(0) || "M" }}
+                  </span>
+                </div>
+                <div>
+                  <span
+                    class="block text-[10px] font-sans font-bold text-amber-600 uppercase tracking-widest leading-none mb-2"
+                  >
+                    Produksi Dari
+                  </span>
+                  <h4 class="text-xl font-heading text-stone-900 line-clamp-1">
+                    {{ product?.umkm?.nama || "Mitra UMKM" }}
+                  </h4>
                 </div>
               </div>
+              <div class="flex items-center gap-1 shrink-0">
+                <Button
+                  v-if="product?.umkm?.instagram"
+                  variant="ghost"
+                  size="icon"
+                  class="size-10 rounded-none hover:bg-transparent shrink-0"
+                  @click="visitInstagram"
+                >
+                  <img
+                    src="/images/instagram-bw.webp"
+                    alt="Instagram"
+                    class="size-14 object-contain opacity-60"
+                  />
+                </Button>
+                <Button
+                  v-if="product?.umkm?.no_hp"
+                  variant="ghost"
+                  size="icon"
+                  class="size-10 rounded-none hover:bg-transparent shrink-0"
+                  @click="contactUMKM"
+                >
+                  <img
+                    src="/images/whatsapp-bw.webp"
+                    alt="WhatsApp"
+                    class="size-14 object-contain opacity-60"
+                  />
+                </Button>
+              </div>
             </div>
 
-            <Button
-              variant="primary"
-              size="lg"
-              rounded="none"
-              class="w-full h-16 text-xs uppercase tracking-[0.2em] font-bold"
-              @click="contactUMKM"
-            >
-              Hubungi Pengrajin via WhatsApp
-            </Button>
+            <div class="space-y-1 border-t border-stone-100 pt-4">
+              <span
+                class="block text-[10px] text-stone-400 uppercase font-bold tracking-widest"
+                >Lokasi</span
+              >
+              <div class="flex items-center gap-2 text-stone-700">
+                <MapPin class="size-4 text-amber-600" />
+                <span class="text-xs font-medium">{{
+                  product?.umkm?.lokasi || product?.asal_daerah || "Nusantara"
+                }}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

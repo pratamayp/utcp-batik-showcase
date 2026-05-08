@@ -6,6 +6,7 @@ import {
   Phone,
   MapPin,
   Loader2,
+  Instagram,
 } from "lucide-vue-next";
 import { useForm } from "vee-validate";
 import * as z from "zod";
@@ -26,6 +27,7 @@ const schema = toTypedSchema(
   z.object({
     name: z.string().min(1, "Nama UMKM wajib diisi"),
     contact: z.string().min(5, "Nomor kontak minimal 5 digit"),
+    instagram: z.string().optional(),
     location: z.string().min(5, "Alamat lengkap minimal 5 karakter"),
     description: z.string().min(10, "Deskripsi minimal 10 karakter"),
   }),
@@ -36,6 +38,7 @@ const { handleSubmit, errors, defineField, isSubmitting } = useForm({
   initialValues: {
     name: "",
     contact: "",
+    instagram: "",
     location: "",
     description: "",
   },
@@ -43,6 +46,7 @@ const { handleSubmit, errors, defineField, isSubmitting } = useForm({
 
 const [name] = defineField("name");
 const [contact] = defineField("contact");
+const [instagram] = defineField("instagram");
 const [location] = defineField("location");
 const [description] = defineField("description");
 
@@ -53,6 +57,7 @@ const onSubmit = handleSubmit(async (values) => {
       body: {
         nama: values.name,
         no_hp: values.contact,
+        instagram: values.instagram,
         lokasi: values.location,
         deskripsi: values.description,
         is_active: true,
@@ -156,6 +161,34 @@ const onSubmit = handleSubmit(async (values) => {
               class="text-[10px] text-rose-600 font-bold uppercase tracking-wider"
             >
               {{ errors.contact }}
+            </p>
+          </div>
+
+          <!-- Instagram -->
+          <div class="space-y-2">
+            <div class="flex items-center gap-2">
+              <label
+                class="text-[10px] font-bold text-stone-400 uppercase tracking-widest"
+                >Username Instagram</label
+              >
+            </div>
+            <div class="relative group">
+              <div
+                class="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 group-focus-within:text-amber-600 transition-colors"
+              >
+                <Instagram class="w-3.5 h-3.5" />
+              </div>
+              <Input
+                v-model="instagram"
+                placeholder="Contoh: @batik.solo.indah"
+                class="h-12 pl-12 rounded-none border-stone-200 focus:border-amber-600 focus:ring-amber-600/20"
+              />
+            </div>
+            <p
+              v-if="errors.instagram"
+              class="text-[10px] text-rose-600 font-bold uppercase tracking-wider"
+            >
+              {{ errors.instagram }}
             </p>
           </div>
         </div>
