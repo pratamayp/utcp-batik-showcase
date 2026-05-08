@@ -54,7 +54,7 @@
 
       <!-- Redesigned Seller Section -->
       <div
-        class="pt-4 border-t border-stone-100 flex items-center justify-between"
+        class="pt-4 border-t border-stone-100 flex items-center justify-between gap-2"
       >
         <div class="flex items-center gap-3">
           <!-- Seller Initial/Avatar -->
@@ -71,21 +71,25 @@
               >Koleksi Dari</span
             >
             <span
-              class="block text-sm font-heading text-stone-900 leading-none"
+              class="block text-sm font-heading text-stone-900 leading-none pb-px line-clamp-1"
               >{{ product.seller }}</span
             >
           </div>
         </div>
 
-        <!-- <div class="flex flex-col items-end gap-1.5">
-          <div class="flex items-center gap-1 text-stone-400">
-            <MapPin class="size-3" />
-            <span
-              class="text-[9px] font-sans font-bold uppercase tracking-tight"
-              >{{ product.umkmLocation }}</span
-            >
-          </div>
-        </div> -->
+        <Button
+          v-if="product.umkmPhone"
+          variant="ghost"
+          size="icon"
+          class="size-8 rounded-none hover:bg-transparent shrink-0"
+          @click.stop="contactUMKM"
+        >
+          <img
+            src="/images/whatsapp.webp"
+            alt="WhatsApp"
+            class="size-8 object-contain"
+          />
+        </Button>
       </div>
 
       <!-- Simplified Action Button -->
@@ -107,10 +111,16 @@
 <script setup>
 import { Button } from "@/components/ui/button";
 
-defineProps({
+const props = defineProps({
   product: {
     type: Object,
     required: true,
   },
 });
+
+const contactUMKM = () => {
+  if (props.product?.umkmPhone) {
+    window.open(`https://wa.me/${props.product.umkmPhone}`, "_blank");
+  }
+};
 </script>
