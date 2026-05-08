@@ -2,19 +2,18 @@
 <script setup lang="ts">
 import { Plus, Search, MoreVertical, Edit2, Trash2 } from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
-import DashboardTable from "@/components/dashboard/DashboardTable.vue";
-import DashboardPagination from "@/components/dashboard/DashboardPagination.vue";
-import DashboardSelect from "@/components/dashboard/DashboardSelect.vue";
+import { Switch } from "@/components/ui/switch";
+import {
+  DashboardTable,
+  DashboardPagination,
+  DashboardSelect,
+} from "@/components/dashboard";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-import { Switch } from "@/components/ui/switch";
-
-// Delete Confirmation logic
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +24,18 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { toast } from "vue-sonner";
+import type { ProductRow } from "~~/server/types/product.type";
+
+interface ProductResponse {
+  data: (ProductRow & { umkm: { nama: string } })[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
 
 definePageMeta({
   layout: "dashboard",
@@ -32,66 +43,36 @@ definePageMeta({
 });
 
 const columns = [
-  { key: "image", label: "Produk" },
-  { key: "name", label: "Nama Batik" },
-  { key: "umkm", label: "UMKM Pengrajin" },
-  { key: "category", label: "Kategori" },
+  { key: "nama", label: "Nama Batik" },
+  { key: "asal_daerah", label: "Asal Daerah" },
+  { key: "ringkasan", label: "Ringkasan" },
+  { key: "umkm", label: "UMKM" },
   { key: "status", label: "Status" },
   { key: "actions", label: "", class: "w-10" },
 ];
 
-const products = ref([
-  {
-    id: 1,
-    name: "Batik Parang Kencana",
-    umkm: "Batik Solo Indah",
-    category: "Tulis",
-    isActive: true,
-    image: "/images/batik-1.webp",
-  },
-  {
-    id: 2,
-    name: "Batik Megamendung Blue",
-    umkm: "Cirebon Heritage",
-    category: "Cap",
-    isActive: true,
-    image: "/images/batik-2.webp",
-  },
-  {
-    id: 3,
-    name: "Batik Kawung Modern",
-    umkm: "Jogja Art",
-    category: "Tulis",
-    isActive: false,
-    image: "/images/batik-3.webp",
-  },
-  {
-    id: 4,
-    name: "Batik Sidomukti Gold",
-    umkm: "Solo Heritage",
-    category: "Tulis",
-    isActive: true,
-    image: "/images/batik-1.webp",
-  },
-  {
-    id: 5,
-    name: "Batik Truntum Biru",
-    umkm: "Pekalongan Jaya",
-    category: "Kombinasi",
-    isActive: false,
-    image: "/images/batik-2.webp",
-  },
-]);
-
 const route = useRoute();
 const router = useRouter();
 
-const categories = [
-  { label: "Semua Kategori", value: "all" },
-  { label: "Batik Tulis", value: "tulis" },
-  { label: "Batik Cap", value: "cap" },
-  { label: "Batik Kombinasi", value: "kombinasi" },
-];
+const { data: response, refresh } = await useFetch<ProductResponse>(
+  "/api/products",
+  {
+    query: computed(() => ({
+      page: route.query.page || 1,
+      search: route.query.search || "",
+      sort: route.query.sort || "newest",
+      limit: 10,
+    })),
+    watch: [
+      () => route.query.page,
+      () => route.query.search,
+      () => route.query.sort,
+    ],
+  },
+);
+
+const productList = computed(() => response.value?.data || []);
+const totalItems = computed(() => response.value?.pagination.total || 0);
 
 const sortOptions = [
   { label: "Terbaru", value: "newest" },
@@ -125,6 +106,26 @@ const currentPage = computed({
   },
 });
 
+const toggleStatus = async (item: ProductRow) => {
+  try {
+    await $fetch(`/api/products/${item.id}/status`, {
+      method: "PATCH",
+      body: { is_active: item.is_active },
+    });
+    toast.success(`Status ${item.nama} diperbarui`, {
+      description: `Sekarang dalam status ${
+        item.is_active ? "Aktif" : "Non-Aktif"
+      }.`,
+    });
+    refresh();
+  } catch (error: any) {
+    item.is_active = !item.is_active;
+    toast.error("Gagal memperbarui status", {
+      description: error.message || "Terjadi kesalahan pada server.",
+    });
+  }
+};
+
 const isDeleteDialogOpen = ref(false);
 const itemToDelete = ref<any>(null);
 
@@ -133,14 +134,21 @@ const openDeleteDialog = (item: any) => {
   isDeleteDialogOpen.value = true;
 };
 
-const handleDelete = () => {
+const handleDelete = async () => {
   if (itemToDelete.value) {
-    products.value = products.value.filter(
-      (p) => p.id !== itemToDelete.value.id,
-    );
-    itemToDelete.value = null;
-    isDeleteDialogOpen.value = false;
-    alert("Produk berhasil dihapus");
+    try {
+      await $fetch(`/api/products/${itemToDelete.value.id}`, {
+        method: "DELETE",
+      });
+      refresh();
+      itemToDelete.value = null;
+      isDeleteDialogOpen.value = false;
+      toast.success("Produk berhasil dihapus");
+    } catch (error: any) {
+      toast.error("Gagal menghapus produk", {
+        description: error.message || "Terjadi kesalahan pada server.",
+      });
+    }
   }
 };
 </script>
@@ -161,7 +169,7 @@ const handleDelete = () => {
       </div>
       <NuxtLink href="/katalog/tambah">
         <Button variant="primary">
-          <Plus class="w-4 h-4" />
+          <Plus class="w-4 h-4 mr-2" />
           Tambah Produk
         </Button>
       </NuxtLink>
@@ -178,17 +186,11 @@ const handleDelete = () => {
         <input
           v-model="searchQuery"
           type="text"
-          placeholder="Cari nama batik atau UMKM..."
+          placeholder="Cari nama batik, asal, atau ringkasan..."
           class="w-full bg-white border border-stone-200 rounded-none h-12 pl-12 pr-4 outline-none focus:border-amber-600 transition-all font-body text-sm text-stone-900 shadow-none"
         />
       </div>
       <div class="flex items-center gap-3 w-full md:w-auto">
-        <DashboardSelect
-          param-key="category"
-          placeholder="Kategori"
-          :options="categories"
-          class="w-full md:w-48"
-        />
         <DashboardSelect
           param-key="sort"
           placeholder="Urutkan"
@@ -201,24 +203,11 @@ const handleDelete = () => {
 
     <!-- Table Section -->
     <div class="space-y-4">
-      <DashboardTable :columns="columns" :data="products">
-        <!-- Image Column -->
-        <template #cell-image="{ row }">
-          <div
-            class="size-12 bg-stone-100 rounded-none overflow-hidden border border-stone-100 shadow-sm"
-          >
-            <img
-              :src="row.image"
-              :alt="row.name"
-              class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
-            />
-          </div>
-        </template>
-
+      <DashboardTable :columns="columns" :data="productList">
         <!-- Name Column -->
-        <template #cell-name="{ row }">
+        <template #cell-nama="{ row }">
           <div class="flex flex-col">
-            <span class="text-sm font-bold text-stone-900">{{ row.name }}</span>
+            <span class="text-sm font-bold text-stone-900">{{ row.nama }}</span>
             <span
               class="text-[10px] font-bold text-stone-400 uppercase tracking-widest"
               >ID: #{{ row.id }}</span
@@ -226,15 +215,37 @@ const handleDelete = () => {
           </div>
         </template>
 
+        <!-- Asal Daerah Column -->
+        <template #cell-asal_daerah="{ row }">
+          <span class="text-xs text-stone-600">{{ row.asal_daerah }}</span>
+        </template>
+
+        <!-- Ringkasan Column -->
+        <template #cell-ringkasan="{ row }">
+          <p class="text-xs text-stone-500 line-clamp-1 max-w-xs">
+            {{ row.ringkasan || "-" }}
+          </p>
+        </template>
+
+        <!-- UMKM Column -->
+        <template #cell-umkm="{ row }">
+          <span class="text-xs font-medium text-stone-700">{{
+            row.umkm?.nama || "-"
+          }}</span>
+        </template>
+
         <!-- Status Column -->
         <template #cell-status="{ row }">
           <div class="flex items-center gap-3">
-            <Switch v-model:checked="row.isActive" />
+            <Switch
+              v-model="row.is_active"
+              @update:model-value="toggleStatus(row)"
+            />
             <span
               class="text-[10px] font-bold uppercase tracking-widest transition-colors"
-              :class="row.isActive ? 'text-emerald-600' : 'text-stone-400'"
+              :class="row.is_active ? 'text-emerald-600' : 'text-stone-400'"
             >
-              {{ row.isActive ? "Aktif" : "Non-Aktif" }}
+              {{ row.is_active ? "Aktif" : "Non-Aktif" }}
             </span>
           </div>
         </template>
@@ -253,14 +264,16 @@ const handleDelete = () => {
               align="end"
               class="rounded-none border-stone-200 shadow-xl w-40"
             >
+              <NuxtLink :to="`/katalog/${row.id}`">
+                <DropdownMenuItem
+                  class="cursor-pointer text-xs font-bold uppercase tracking-widest text-stone-600 focus:bg-amber-50 focus:text-amber-900"
+                >
+                  <Edit2 class="w-3.5 h-3.5 mr-2" />
+                  Edit
+                </DropdownMenuItem>
+              </NuxtLink>
               <DropdownMenuItem
-                class="cursor-pointer text-xs font-bold uppercase tracking-widest text-stone-600 focus:bg-amber-50 focus:text-amber-900"
-              >
-                <Edit2 class="w-3.5 h-3.5 mr-2" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                class="cursor-pointer text-xs font-bold uppercase tracking-widest text-rose-600 focus:bg-rose-50 focus:text-rose-700"
+                class="cursor-pointer text-xs font-bold uppercase tracking-widest text-red-800 focus:bg-red-100 focus:text-red-900"
                 @click="openDeleteDialog(row)"
               >
                 <Trash2 class="w-3.5 h-3.5 mr-2" />
@@ -273,8 +286,8 @@ const handleDelete = () => {
 
       <DashboardPagination
         v-model:current-page="currentPage"
-        :total="124"
-        :items-per-page="5"
+        :total="totalItems"
+        :items-per-page="10"
       />
     </div>
 
@@ -294,7 +307,7 @@ const handleDelete = () => {
           >
             Apakah Anda yakin ingin menghapus
             <span class="font-bold text-stone-900 italic"
-              >"{{ itemToDelete?.name }}"</span
+              >"{{ itemToDelete?.nama }}"</span
             >? Tindakan ini tidak dapat dibatalkan dan produk akan dihapus
             permanen dari katalog.
           </AlertDialogDescription>
@@ -306,7 +319,7 @@ const handleDelete = () => {
             Batal
           </AlertDialogCancel>
           <AlertDialogAction
-            class="rounded-none bg-rose-600 text-white hover:bg-rose-700 text-[10px] font-bold uppercase tracking-widest"
+            class="rounded-none bg-red-800 text-white hover:bg-red-900 text-[10px] font-bold uppercase tracking-widest"
             @click="handleDelete"
           >
             Ya, Hapus Produk

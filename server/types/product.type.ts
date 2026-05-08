@@ -11,6 +11,7 @@ export interface ProductRow {
   umkm_id: number;
   images: any;
   ringkasan: string;
+  is_active: boolean;
 }
 
 export interface ProductInsert {
@@ -24,6 +25,7 @@ export interface ProductInsert {
   umkm_id: number;
   images: any;
   ringkasan: string;
+  is_active?: boolean;
 }
 
 export interface ProductUpdate {
@@ -37,4 +39,5 @@ export interface ProductUpdate {
   umkm_id?: number;
   images?: any;
   ringkasan?: string;
+  is_active?: boolean;
 }

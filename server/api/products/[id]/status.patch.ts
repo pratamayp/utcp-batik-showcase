@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const { data, error } = await client
-    .from("umkm")
+    .from("products")
     // @ts-expect-error: is not assignable to parameter of type 'never'
     .update({
       is_active,
