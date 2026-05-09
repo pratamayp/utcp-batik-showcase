@@ -45,9 +45,7 @@
         <h3 class="text-xl font-heading text-stone-900 line-clamp-1">
           {{ product.nama }}
         </h3>
-        <p
-          class="text-stone-600 text-sm font-body leading-relaxed line-clamp-2"
-        >
+        <p class="text-stone-600 text-sm font-body leading-snug line-clamp-3">
           {{ product.deskripsi }}
         </p>
       </div>

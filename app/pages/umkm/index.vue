@@ -52,7 +52,12 @@ const columns = [
 const route = useRoute();
 const router = useRouter();
 
-const { data: response, refresh } = await useFetch<UmkmResponse>("/api/umkm", {
+const {
+  data: response,
+  refresh,
+  status,
+} = useFetch<UmkmResponse>("/api/umkm", {
+  lazy: true,
   query: computed(() => ({
     page: route.query.page || 1,
     search: route.query.search || "",
@@ -65,6 +70,8 @@ const { data: response, refresh } = await useFetch<UmkmResponse>("/api/umkm", {
     () => route.query.sort,
   ],
 });
+
+const isLoading = computed(() => status.value === "pending");
 
 const umkmList = computed(() => response.value?.data || []);
 const totalItems = computed(() => response.value?.pagination.total || 0);
@@ -180,7 +187,7 @@ const handleDelete = async () => {
 
     <!-- Table Section -->
     <div class="space-y-4">
-      <DashboardTable :columns="columns" :data="umkmList">
+      <DashboardTable :columns="columns" :data="umkmList" :loading="isLoading">
         <!-- Name Column -->
         <template #cell-nama="{ row }">
           <div class="flex flex-col">

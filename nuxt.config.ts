@@ -54,7 +54,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       // The default title if a page doesn't specify one
-      title: "Batik Showcase",
+      title: "E-Katalog Batik",
 
       // %s will be replaced by the individual page's title
       titleTemplate: "%s | UT Capstone Project",
