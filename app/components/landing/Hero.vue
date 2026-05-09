@@ -70,7 +70,7 @@
         class="flex flex-col items-end text-white/40 font-serif italic text-sm"
       >
         <span>Est. 2024</span>
-        <span>Batik Showcase</span>
+        <span>E-Katalog Batik</span>
       </div>
     </div>
 

@@ -54,22 +54,26 @@ const columns = [
 const route = useRoute();
 const router = useRouter();
 
-const { data: response, refresh } = await useFetch<ProductResponse>(
-  "/api/products",
-  {
-    query: computed(() => ({
-      page: route.query.page || 1,
-      search: route.query.search || "",
-      sort: route.query.sort || "newest",
-      limit: 10,
-    })),
-    watch: [
-      () => route.query.page,
-      () => route.query.search,
-      () => route.query.sort,
-    ],
-  },
-);
+const {
+  data: response,
+  refresh,
+  status,
+} = useFetch<ProductResponse>("/api/products", {
+  lazy: true,
+  query: computed(() => ({
+    page: route.query.page || 1,
+    search: route.query.search || "",
+    sort: route.query.sort || "newest",
+    limit: 10,
+  })),
+  watch: [
+    () => route.query.page,
+    () => route.query.search,
+    () => route.query.sort,
+  ],
+});
+
+const isLoading = computed(() => status.value === "pending");
 
 console.log("response", response.value);
 
@@ -205,7 +209,11 @@ const handleDelete = async () => {
 
     <!-- Table Section -->
     <div class="space-y-4">
-      <DashboardTable :columns="columns" :data="productList">
+      <DashboardTable
+        :columns="columns"
+        :data="productList"
+        :loading="isLoading"
+      >
         <!-- Name Column -->
         <template #cell-nama="{ row }">
           <div class="flex flex-col">
