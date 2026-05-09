@@ -232,7 +232,7 @@ const handleDelete = async () => {
 
         <!-- Ringkasan Column -->
         <template #cell-ringkasan="{ row }">
-          <p class="text-xs text-stone-500 line-clamp-1 max-w-xs">
+          <p class="text-xs text-stone-500 line-clamp-2 text-ellipsis max-w-xs">
             {{ row.ringkasan || "-" }}
           </p>
         </template>
