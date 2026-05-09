@@ -54,16 +54,55 @@ export default defineEventHandler(async (event) => {
     return { total: total || 0, change };
   };
 
-  const [productStats, umkmStats, recentProductsResult] = await Promise.all([
-    getStats("products"),
-    getStats("umkm"),
-    client
-      .from("products")
-      .select("*, umkm(nama)")
-      .is("deleted_at", null)
-      .order("created_at", { ascending: false })
-      .limit(5),
-  ]);
+  const getVisitStats = async () => {
+    // 1. Total visits
+    const { count: total } = await client
+      .from("logs")
+      .select("*", { count: "exact", head: true })
+      .eq("type", "page_view");
+
+    // 2. Visits in last 30 days
+    const { count: currentCount } = await client
+      .from("logs")
+      .select("*", { count: "exact", head: true })
+      .eq("type", "page_view")
+      .gte("created_at", thirtyDaysAgo);
+
+    // 3. Visits in 30-60 days ago
+    const { count: previousCount } = await client
+      .from("logs")
+      .select("*", { count: "exact", head: true })
+      .eq("type", "page_view")
+      .lt("created_at", thirtyDaysAgo)
+      .gte("created_at", sixtyDaysAgo);
+
+    const prevCount = previousCount || 0;
+    const currCount = currentCount || 0;
+    const diff = currCount - prevCount;
+    let change = "0";
+
+    if (prevCount === 0) {
+      change = currCount > 0 ? `+${currCount}` : "0";
+    } else {
+      const percent = (diff / prevCount) * 100;
+      change = `${diff >= 0 ? "+" : ""}${percent.toFixed(1)}%`;
+    }
+
+    return { total: total || 0, change };
+  };
+
+  const [productStats, umkmStats, visitStats, recentProductsResult] =
+    await Promise.all([
+      getStats("products"),
+      getStats("umkm"),
+      getVisitStats(),
+      client
+        .from("products")
+        .select("*, umkm(nama)")
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false })
+        .limit(5),
+    ]);
 
   if (recentProductsResult.error) {
     throw createError({
@@ -83,8 +122,8 @@ export default defineEventHandler(async (event) => {
         change: umkmStats.change,
       },
       totalVisits: {
-        value: 0,
-        change: "+0%",
+        value: visitStats.total,
+        change: visitStats.change,
       },
     },
     recentProducts: recentProductsResult.data,
