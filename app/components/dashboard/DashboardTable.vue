@@ -48,7 +48,11 @@ defineProps<{
             :key="`skeleton-${i}`"
             class="border-none hover:bg-transparent"
           >
-            <TableCell v-for="col in columns" :key="col.key" class="px-6 py-4">
+            <TableCell
+              v-for="col in columns"
+              :key="col.key"
+              class="px-6 py-4 whitespace-normal"
+            >
               <Skeleton class="h-4 w-full" />
             </TableCell>
           </TableRow>
@@ -59,7 +63,11 @@ defineProps<{
             :key="index"
             class="hover:bg-stone-50/50 transition-colors border-none group"
           >
-            <TableCell v-for="col in columns" :key="col.key" class="px-6 py-4">
+            <TableCell
+              v-for="col in columns"
+              :key="col.key"
+              class="px-6 py-4 whitespace-normal"
+            >
               <slot :name="`cell-${col.key}`" :row="row">
                 <span class="text-sm text-stone-600 font-body">
                   {{ (row as any)[col.key] }}
