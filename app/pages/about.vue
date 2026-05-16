@@ -66,17 +66,17 @@
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           <div
-            v-for="i in 5"
-            :key="i"
+            v-for="member in team"
+            :key="member.nim"
             class="bg-white p-8 border border-stone-200 text-center space-y-2 hover:border-amber-600 transition-all duration-300 shadow-sm hover:shadow-md"
           >
             <h4 class="font-heading font-bold text-stone-900 text-base">
-              Nama Member {{ i }}
+              {{ member.name }}
             </h4>
             <p
               class="text-amber-700 text-xs font-sans font-bold uppercase tracking-widest"
             >
-              NIM. 123456789{{ i }}
+              NIM. {{ member.nim }}
             </p>
           </div>
         </div>
@@ -90,4 +90,12 @@
 
 <script setup>
 import { ArrowLeft } from "lucide-vue-next";
+
+const team = [
+  { name: "Khaldaa Salsabila Nashira", nim: "047903991" },
+  { name: "Muhammad Choirul Umam", nim: "048010983" },
+  { name: "Naura Yasmin Ayyuni", nim: "048363252" },
+  { name: "Roy Charly Lumbantoruan", nim: "051853913" },
+  { name: "Yoga Pratama", nim: "053972828" },
+];
 </script>

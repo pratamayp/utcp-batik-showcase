@@ -226,7 +226,7 @@ const handleDelete = async () => {
         <!-- Description Column -->
         <template #cell-deskripsi="{ row }">
           <span
-            class="text-xs text-stone-600 whitespace-normal leading-relaxed italic"
+            class="text-xs text-stone-600 line-clamp-3 text-ellipsis max-w-xs"
             >{{ row.deskripsi || "-" }}</span
           >
         </template>

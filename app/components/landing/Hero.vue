@@ -48,9 +48,11 @@
           class="mt-12 flex flex-wrap gap-4 items-center animate-fade-in-up"
           style="animation-delay: 600ms"
         >
-          <Button variant="hero" size="lg" rounded="none">
-            Jelajahi Koleksi
-          </Button>
+          <NuxtLink to="#catalogue">
+            <Button variant="hero" size="lg" rounded="none">
+              Jelajahi Koleksi
+            </Button>
+          </NuxtLink>
 
           <NuxtLink to="/about">
             <Button variant="outline" size="lg" rounded="none">
