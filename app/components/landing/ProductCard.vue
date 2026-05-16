@@ -75,7 +75,7 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-0.5 shrink-0">
+        <div class="flex items-center shrink-0">
           <Button
             v-if="product.umkmInstagram"
             variant="ghost"
@@ -86,7 +86,7 @@
             <img
               src="/images/instagram-bw.webp"
               alt="Instagram"
-              class="size-8 object-contain opacity-60"
+              class="size-6 object-contain opacity-60"
             />
           </Button>
           <Button
@@ -99,7 +99,7 @@
             <img
               src="/images/whatsapp-bw.webp"
               alt="WhatsApp"
-              class="size-8 object-contain opacity-60"
+              class="size-6 object-contain opacity-60"
             />
           </Button>
         </div>
