@@ -89,17 +89,19 @@
               terjaga.
             </p>
             <div class="pt-4">
-              <Button
-                variant="primary"
-                size="lg"
-                rounded="none"
-                class="group/btn px-10"
-              >
-                Pelajari Inisiatif Kami
-                <ArrowRight
-                  class="ml-2 h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1.5"
-                />
-              </Button>
+              <NuxtLink to="/inisiatif">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  rounded="none"
+                  class="group/btn px-6 md:px-10"
+                >
+                  Pelajari Inisiatif Kami
+                  <ArrowRight
+                    class="ml-2 h-5 w-5 transition-transform duration-300 group-hover/btn:translate-x-1.5"
+                  />
+                </Button>
+              </NuxtLink>
             </div>
           </div>
         </div>

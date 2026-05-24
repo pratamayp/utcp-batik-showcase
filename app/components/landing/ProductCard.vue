@@ -112,7 +112,7 @@
           variant="primary"
           size="lg"
           rounded="none"
-          class="w-full h-12 text-xs uppercase tracking-[0.2em] font-bold"
+          class="w-full h-11 md:h-12 !text-xs uppercase tracking-[0.2em] font-bold"
         >
           <NuxtLink :to="`/koleksi/${product.id}`"> Detail Produk </NuxtLink>
         </Button>
@@ -133,7 +133,11 @@ const props = defineProps({
 
 const contactUMKM = () => {
   if (props.product?.umkmPhone) {
-    window.open(`https://wa.me/${props.product.umkmPhone}`, "_blank");
+    let phone = props.product.umkmPhone.replace(/\D/g, "");
+    if (phone.startsWith("0")) {
+      phone = "62" + phone.slice(1);
+    }
+    window.open(`https://wa.me/${phone}`, "_blank");
   }
 };
 
