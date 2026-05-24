@@ -23,7 +23,11 @@ const activeImage = ref(product.value?.images?.[0] || "/images/hero.webp");
 
 const contactUMKM = () => {
   if (product.value?.umkm?.no_hp) {
-    window.open(`https://wa.me/${product.value.umkm.no_hp}`, "_blank");
+    let phone = product.value.umkm.no_hp.replace(/\D/g, "");
+    if (phone.startsWith("0")) {
+      phone = "62" + phone.slice(1);
+    }
+    window.open(`https://wa.me/${phone}`, "_blank");
   }
 };
 

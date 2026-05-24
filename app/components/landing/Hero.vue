@@ -76,16 +76,7 @@
       </div>
     </div>
 
-    <!-- Scroll Indicator -->
-    <div
-      class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 animate-bounce cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
-    >
-      <span
-        class="text-white text-[10px] uppercase tracking-[0.3em] font-semibold"
-        >Scroll</span
-      >
-      <div class="w-px h-16 bg-linear-to-b from-amber-500 to-transparent"></div>
-    </div>
+
   </section>
 </template>
 

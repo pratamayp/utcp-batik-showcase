@@ -94,7 +94,7 @@
                   variant="primary"
                   size="lg"
                   rounded="none"
-                  class="group/btn px-10"
+                  class="group/btn px-6 md:px-10"
                 >
                   Pelajari Inisiatif Kami
                   <ArrowRight
