@@ -212,7 +212,7 @@ useHead({
                   >Lokasi</span
                 >
                 <div class="flex items-center gap-2 text-stone-700">
-                  <MapPin class="size-4 text-amber-600" />
+                  <MapPin class="size-4 text-amber-600 shrink-0" />
                   <span class="text-xs font-medium">{{
                     product?.umkm?.lokasi || product?.asal_daerah || "Nusantara"
                   }}</span>
