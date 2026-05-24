@@ -27,12 +27,12 @@
         <div
           class="flex gap-8 text-xs font-sans font-bold uppercase tracking-widest"
         >
-          <a href="#" class="hover:text-amber-500 transition-colors">Beranda</a>
-          <a href="/about" class="hover:text-amber-500 transition-colors"
-            >Tentang</a
+          <NuxtLink to="/" class="hover:text-amber-500 transition-colors">Beranda</NuxtLink>
+          <NuxtLink to="/about" class="hover:text-amber-500 transition-colors"
+            >Tentang</NuxtLink
           >
-          <a href="#catalogue" class="hover:text-amber-500 transition-colors"
-            >Katalog</a
+          <NuxtLink to="/#catalogue" class="hover:text-amber-500 transition-colors"
+            >Katalog</NuxtLink
           >
         </div>
 
