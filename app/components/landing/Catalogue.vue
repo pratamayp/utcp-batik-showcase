@@ -128,7 +128,7 @@ const activeFilter = ref("Semua");
 const { data: response, pending } = await useFetch("/api/products", {
   query: computed(() => ({
     asal: activeFilter.value,
-    limit: 12,
+    limit: 30,
     active_only: true,
   })),
   watch: [activeFilter],
