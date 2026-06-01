@@ -31,7 +31,7 @@
             <div class="space-y-4">
               <h2 class="text-3xl md:text-4xl font-heading text-stone-900">
                 Capstone Project <br />
-                <p class="text-stone-500 text-lg pt-1">Kelompok 49</p>
+                <p class="text-stone-500 text-lg pt-1">Kelas 49 Kelompok A</p>
               </h2>
               <div class="h-1 w-20 bg-amber-600"></div>
             </div>

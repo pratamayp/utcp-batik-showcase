@@ -75,8 +75,6 @@ const {
 
 const isLoading = computed(() => status.value === "pending");
 
-console.log("response", response.value);
-
 const productList = computed(() => response.value?.data || []);
 const totalItems = computed(() => response.value?.pagination.total || 0);
 
