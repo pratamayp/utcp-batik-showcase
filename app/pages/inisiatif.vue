@@ -22,8 +22,7 @@
             Pilar Utama Inisiatif Kami
           </h2>
           <p class="text-stone-600 font-body leading-relaxed">
-            Inisiatif ini dirancang secara berimbang untuk merawat tradisi masa
-            lalu sekaligus mengamankan kemakmuran masa depan.
+            Batik merupakan warisan budaya tak benda yang diakui UNESCO, sarat akan sejarah dan nilai estetika. Inisiatif ini dirancang untuk merespons urgensi integrasi antara promosi dan pelestarian budaya.
           </p>
         </div>
 
@@ -44,12 +43,7 @@
                 Eksplorasi &amp; Pelestarian Budaya
               </h3>
               <p class="text-stone-600 font-body leading-relaxed text-base">
-                Menjembatani jarak generasi. Kami mengemas ulang kisah, filosofi
-                mendalam, serta makna spiritual di balik corak-corak batik
-                klasik ke dalam visualisasi digital yang memikat. Melalui
-                pendekatan interaktif ini, kami memastikan bahwa Generasi Z
-                &amp; Alpha tidak hanya melihat selembar kain, melainkan
-                memahami jiwa dan kekayaan intelektual leluhur mereka.
+                Menjembatani kesenjangan pemahaman budaya. Setiap goresan motif batik mengandung makna filosofis mendalam yang mencerminkan identitas nasional dan kearifan lokal. Di tengah arus globalisasi yang menggeser minat pelestarian tradisi, kami berupaya agar Generasi Z tidak sekadar mengenal batik sebagai pakaian formal, melainkan memahami makna filosofis di baliknya.
               </p>
             </div>
           </div>
@@ -70,12 +64,7 @@
                 Pemberdayaan UMKM
               </h3>
               <p class="text-stone-600 font-body leading-relaxed text-base">
-                Mendorong kemandirian ekonomi perajin. Kami menyediakan
-                infrastruktur promosi digital yang modern, efektif, dan
-                profesional untuk pelaku UMKM lokal. Dengan etalase global ini,
-                para pengrajin batik tradisional dapat menjangkau pasar yang
-                jauh lebih luas secara langsung tanpa perantara yang merugikan,
-                memperkuat kedaulatan ekonomi kreatif lokal.
+                Mengatasi hambatan pemasaran digital. Kami menyadari bahwa UMKM seperti Batik Gemawang Kabupaten Semarang memiliki motif khas yang luhur, namun promosi digitalnya masih minim. Oleh karena itu, kami menghadirkan transisi digital berupa E-Catalog Web-Based guna menyatukan etalase komersial dan transfer edukasi budaya secara praktis untuk memperluas jangkauan mereka.
               </p>
             </div>
           </div>
@@ -106,11 +95,11 @@
               1. Mencatat dan Menjaga Keaslian Batik
             </h4>
             <p class="text-stone-600 font-body leading-relaxed">
-              Kami melakukan pencatatan menyeluruh terhadap setiap detail kain batik,
-              mulai dari asal-usul daerahnya, nama perajin yang membuatnya, hingga teknik
-              pembuatan yang digunakan seperti tulis tangan, cap tembaga, maupun kombinasinya.
-              Hal ini bertujuan agar keaslian karya seni tradisional tetap terlindungi, serta
-              mencegah klaim sepihak dan pemalsuan motif di era digital.
+              Kami melakukan pencatatan menyeluruh terhadap setiap detail kain
+              batik, mulai dari asal-usul daerahnya, nama perajin yang
+              membuatnya, deskripsi, dan filosofi dibalik motif batik. Hal ini
+              bertujuan agar keaslian karya seni tradisional tetap terlindungi,
+              serta mencegah klaim sepihak dan pemalsuan motif di era digital.
             </p>
           </div>
 
@@ -122,10 +111,12 @@
               2. Menceritakan Makna di Balik Motif
             </h4>
             <p class="text-stone-600 font-body leading-relaxed">
-              Setiap goresan lilin malam pada selembar kain batik menyimpan doa, harapan,
-              status sosial, hingga sejarah leluhur yang sangat mendalam. Kami merangkum cerita,
-              makna simbolis, dan nilai filosofis di balik berbagai motif klasik nusantara secara
-              informatif dan menarik agar mudah dinikmati sekaligus dipelajari oleh generasi muda.
+              Setiap goresan lilin malam pada selembar kain batik menyimpan doa,
+              harapan, status sosial, hingga sejarah leluhur yang sangat
+              mendalam. Kami merangkum cerita, makna simbolis, dan nilai
+              filosofis di balik berbagai motif klasik nusantara secara
+              informatif dan menarik agar mudah dinikmati sekaligus dipelajari
+              oleh generasi muda.
             </p>
           </div>
 
@@ -137,9 +128,10 @@
               3. Menghubungkan Pembeli Langsung ke Perajin
             </h4>
             <p class="text-stone-600 font-body leading-relaxed">
-              Kami memotong rantai distribusi pemasaran dengan cara menyediakan kontak informasi
-              resmi dan sosial media perajin lokal langsung pada setiap halaman katalog produk.
-              Dengan demikian, Anda dapat berkomunikasi dan bertransaksi secara langsung untuk mendukung
+              Kami memotong rantai distribusi pemasaran dengan cara menyediakan
+              kontak informasi resmi dan sosial media perajin lokal langsung
+              pada setiap halaman katalog produk. Dengan demikian, Anda dapat
+              berkomunikasi dan bertransaksi secara langsung untuk mendukung
               kelangsungan usaha mikro mereka tanpa potongan biaya pihak ketiga.
             </p>
           </div>
