@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import { LayoutGrid, Store, Eye, Plus, ArrowUpRight } from "lucide-vue-next";
+import {
+  LayoutGrid,
+  Store,
+  Eye,
+  Plus,
+  ArrowUpRight,
+  Loader2,
+} from "lucide-vue-next";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/id"; // Import Indonesian locale
 import { toast } from "vue-sonner";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import type { ProductWithUmkm, ProductRow } from "~~/server/types/product.type";
 
 dayjs.extend(relativeTime);
@@ -91,6 +100,55 @@ const toggleStatus = async (item: ProductRow) => {
     });
   }
 };
+
+const isGeneratingReport = ref(false);
+
+const downloadReport = async () => {
+  if (isLoading.value || !overviewData.value || isGeneratingReport.value)
+    return;
+
+  try {
+    isGeneratingReport.value = true;
+    // Delay slightly to let Vue re-render the button before main thread blocks
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    const doc = new jsPDF();
+
+    // 1. Title
+    doc.setFontSize(18);
+    doc.text("Laporan Dashboard", 14, 22);
+
+    // 2. Stats
+    doc.setFontSize(12);
+    const dataStats = overviewData.value.stats;
+    doc.text(`Total Produk: ${dataStats.totalProducts.value}`, 14, 35);
+    doc.text(`Mitra UMKM: ${dataStats.totalUmkm.value}`, 14, 42);
+    doc.text(`Total Kunjungan: ${dataStats.totalVisits.value}`, 14, 49);
+
+    // 3. Table
+    doc.text("Katalog Terbaru:", 14, 62);
+
+    const tableData = recentItems.value.map((item) => [
+      item.nama,
+      item.umkm?.nama || "-",
+      dayjs(item.created_at).format("DD MMM YYYY"),
+      item.is_active ? "Aktif" : "Non-Aktif",
+    ]);
+
+    autoTable(doc, {
+      startY: 68,
+      head: [["Nama Produk", "Nama UMKM", "Waktu", "Status"]],
+      body: tableData,
+      theme: "grid",
+      headStyles: { fillColor: [217, 119, 6] },
+    });
+
+    // 4. Save
+    doc.save("Laporan_Dashboard.pdf");
+  } finally {
+    isGeneratingReport.value = false;
+  }
+};
 </script>
 
 <template>
@@ -109,8 +167,17 @@ const toggleStatus = async (item: ProductRow) => {
         </p>
       </div>
       <div class="flex items-center gap-3">
-        <Button variant="outline" class="text-stone-800 hover:bg-black/5">
-          Unduh Laporan
+        <Button
+          variant="outline"
+          class="text-stone-800 hover:bg-black/5"
+          :disabled="isLoading || isGeneratingReport"
+          @click="downloadReport"
+        >
+          <Loader2
+            v-if="isGeneratingReport"
+            class="w-4 h-4 mr-2 animate-spin"
+          />
+          {{ isGeneratingReport ? "Memproses..." : "Unduh Laporan" }}
         </Button>
         <NuxtLink href="/katalog/tambah">
           <Button variant="primary">
